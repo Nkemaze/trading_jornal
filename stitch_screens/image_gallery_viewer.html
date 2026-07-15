@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Trading Journal - Image Viewer</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-container": "#003a11",
+                        "on-primary-container": "#00285c",
+                        "inverse-primary": "#005bc1",
+                        "on-primary": "#002e69",
+                        "error": "#ffb4ab",
+                        "on-tertiary-fixed-variant": "#6a3b00",
+                        "surface-bright": "#393939",
+                        "surface-container-low": "#1c1b1b",
+                        "on-error": "#690005",
+                        "on-tertiary": "#4b2800",
+                        "error-container": "#93000a",
+                        "on-secondary-fixed-variant": "#00531c",
+                        "tertiary": "#ffb874",
+                        "primary-container": "#4b8eff",
+                        "surface-container-high": "#2a2a2a",
+                        "surface-container-highest": "#353534",
+                        "on-surface-variant": "#c1c6d7",
+                        "on-primary-fixed-variant": "#004493",
+                        "primary": "#adc6ff",
+                        "outline-variant": "#414755",
+                        "on-tertiary-fixed": "#2d1600",
+                        "tertiary-container": "#d47b00",
+                        "on-background": "#e5e2e1",
+                        "primary-fixed": "#d8e2ff",
+                        "on-primary-fixed": "#001a41",
+                        "tertiary-fixed-dim": "#ffb874",
+                        "secondary": "#53e16f",
+                        "on-secondary": "#003911",
+                        "surface": "#131313",
+                        "on-secondary-fixed": "#002107",
+                        "secondary-container": "#05b046",
+                        "secondary-fixed": "#72fe88",
+                        "background": "#121212",
+                        "surface-tint": "#adc6ff",
+                        "tertiary-fixed": "#ffdcbf",
+                        "surface-container": "#201f1f",
+                        "secondary-fixed-dim": "#53e16f",
+                        "surface-variant": "#353534",
+                        "inverse-surface": "#e5e2e1",
+                        "on-tertiary-container": "#412200",
+                        "surface-dim": "#131313",
+                        "surface-container-lowest": "#0e0e0e",
+                        "inverse-on-surface": "#313030",
+                        "on-error-container": "#ffdad6",
+                        "primary-fixed-dim": "#adc6ff",
+                        "on-surface": "#e5e2e1",
+                        "outline": "#8b90a0"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "lg": "24px",
+                        "gutter-mobile": "12px",
+                        "md": "16px",
+                        "margin-mobile": "16px",
+                        "xl": "32px",
+                        "base": "8px",
+                        "sm": "8px",
+                        "xs": "4px"
+                    },
+                    "fontFamily": {
+                        "headline-sm": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "mono-data": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "label-md": ["11px", {"lineHeight": "14px", "fontWeight": "500"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "label-lg": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "mono-data": ["14px", {"lineHeight": "20px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #000000;
+            color: #e5e2e1;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .zoom-indicator-active {
+            opacity: 1 !important;
+            transform: scale(1.1);
+        }
+        .ui-fade {
+            transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .canvas-bg {
+            background: radial-gradient(circle at center, #1a1a1a 0%, #000000 100%);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="h-screen w-screen flex flex-col font-body-md text-body-md overflow-hidden bg-black">
+<!-- Top App Bar -->
+<header class="ui-fade fixed top-0 w-full z-50 flex items-center justify-between px-md h-14 bg-black/60 backdrop-blur-md border-b border-white/5" id="top-bar">
+<div class="flex items-center gap-4">
+<button aria-label="Back" class="active:scale-95 transition-transform text-on-surface p-2 -ml-2 rounded-full hover:bg-white/10">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="font-headline-sm text-headline-sm text-on-surface">Chart Detail</h1>
+</div>
+<div class="flex items-center">
+<button aria-label="More Options" class="active:scale-95 transition-transform text-on-surface p-2 rounded-full hover:bg-white/10">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow relative flex items-center justify-center canvas-bg overflow-hidden cursor-grab active:cursor-grabbing" id="image-container">
+<!-- Interactive Chart Placeholder -->
+<div class="relative w-full h-full flex items-center justify-center transition-transform duration-300 ease-out" id="chart-viewport">
+<img class="max-w-none w-full md:w-4/5 lg:w-3/4 object-contain select-none pointer-events-none" data-alt="A high-resolution professional trading interface showing a complex candlestick chart with technical indicators like RSI and moving averages. The candlesticks are rendered in vibrant neon greens and reds against a deep charcoal background, reflecting a high-performance financial aesthetic. The scene is sharp and detailed, emphasizing precision and analytical depth within a modern minimalist trading terminal. Subtle grid lines and price labels are visible, creating a sophisticated corporate financial atmosphere." draggable="false" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD90YjwN7h_-qY9uBTYyYGdJjA9DVgcgu6wMWjSkS80B_iKT98g5Nc-jsSfSiRj2jp1BJJGOLUHpfd1uCs2P4F6gcHFAlpK1KepEGxxFz0rOVe9_s66wnJltr2Qpy6ZyGdL_y5lPUK6QNGuwBJDrr9gMLGjtj9TRc1zcdu8Qo8A2g-kptY-N5OD_FNCz3F_0gE-AQ7VELwybRSI6rNdcKfL0_OPbR3zcxEqxtDbpD1izZ2355oo520gW8HR13Ii690oWVEQ7pqVkJc"/>
+<!-- Pinch Indicator Overlay -->
+<div class="absolute inset-0 pointer-events-none flex items-center justify-center opacity-0 transition-opacity duration-300" id="pinch-overlay">
+<div class="flex flex-col items-center gap-4">
+<div class="flex gap-12">
+<span class="material-symbols-outlined text-primary text-4xl animate-pulse">pinch</span>
+</div>
+<span class="bg-black/40 backdrop-blur-md px-3 py-1 rounded-full text-label-lg font-label-lg text-primary uppercase tracking-widest">Pinch to Zoom</span>
+</div>
+</div>
+</div>
+<!-- Floating Info Tag (Contextual) -->
+<div class="absolute top-20 left-4 bg-black/40 backdrop-blur-md border border-white/10 px-3 py-2 rounded-lg ui-fade">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="font-mono-data text-mono-data text-on-surface">BTC / USDT</span>
+<span class="text-on-surface-variant text-label-md">• 15m</span>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation Bar -->
+<footer class="ui-fade fixed bottom-0 w-full z-50 flex justify-around items-center px-lg h-[72px] bg-black/80 backdrop-blur-xl border-t border-white/5 pb-safe" id="bottom-bar">
+<button aria-label="Share" class="flex flex-col items-center justify-center gap-1 text-on-surface-variant hover:text-primary transition-colors active:scale-90 duration-200">
+<span class="material-symbols-outlined">share</span>
+<span class="font-label-lg text-label-lg">Share</span>
+</button>
+<button aria-label="Download" class="flex flex-col items-center justify-center gap-1 text-on-surface-variant hover:text-primary transition-colors active:scale-90 duration-200">
+<span class="material-symbols-outlined">download</span>
+<span class="font-label-lg text-label-lg">Save</span>
+</button>
+<button aria-label="Delete" class="flex flex-col items-center justify-center gap-1 text-error/80 hover:text-error transition-colors active:scale-90 duration-200">
+<span class="material-symbols-outlined">delete</span>
+<span class="font-label-lg text-label-lg">Delete</span>
+</button>
+</footer>
+<!-- Micro-interaction Script -->
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('image-container');
+            const viewport = document.getElementById('chart-viewport');
+            const topBar = document.getElementById('top-bar');
+            const bottomBar = document.getElementById('bottom-bar');
+            const pinchOverlay = document.getElementById('pinch-overlay');
+            
+            let scale = 1;
+            let lastScale = 1;
+            let uiVisible = true;
+            let timeout;
+
+            // Toggle UI on click
+            container.addEventListener('click', (e) => {
+                if (e.detail === 1) { // Single tap logic
+                    uiVisible = !uiVisible;
+                    topBar.style.opacity = uiVisible ? '1' : '0';
+                    bottomBar.style.opacity = uiVisible ? '1' : '0';
+                    topBar.style.pointerEvents = uiVisible ? 'auto' : 'none';
+                    bottomBar.style.pointerEvents = uiVisible ? 'auto' : 'none';
+                }
+            });
+
+            // Simulate Pinch-to-Zoom logic for desktop demo
+            container.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const delta = e.deltaY * -0.01;
+                scale = Math.min(Math.max(1, scale + delta), 4);
+                viewport.style.transform = `scale(${scale})`;
+                
+                // Show/Hide indicators
+                pinchOverlay.style.opacity = '1';
+                clearTimeout(timeout);
+                timeout = setTimeout(() => {
+                    pinchOverlay.style.opacity = '0';
+                }, 1500);
+            }, { passive: false });
+
+            // Keyboard support
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    // Go back logic
+                    console.log('Exiting viewer...');
+                }
+            });
+
+            // Double tap to reset zoom
+            let lastTap = 0;
+            container.addEventListener('touchstart', (e) => {
+                const now = new Date().getTime();
+                const timesince = now - lastTap;
+                if ((timesince < 300) && (timesince > 0)) {
+                    scale = scale === 1 ? 2.5 : 1;
+                    viewport.style.transform = `scale(${scale})`;
+                    e.preventDefault();
+                }
+                lastTap = now;
+            });
+
+            // Mobile UI auto-hide after inactivity
+            const resetTimer = () => {
+                if (!uiVisible) return;
+                clearTimeout(timeout);
+                timeout = setTimeout(() => {
+                    if (scale > 1) { // Only auto-hide when zoomed in or focused
+                        uiVisible = false;
+                        topBar.style.opacity = '0';
+                        bottomBar.style.opacity = '0';
+                    }
+                }, 3000);
+            };
+
+            container.addEventListener('mousemove', resetTimer);
+            resetTimer();
+        });
+    </script>
+</body></html>

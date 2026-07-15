@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary-container": "#003a11",
+                    "on-primary-container": "#00285c",
+                    "inverse-primary": "#005bc1",
+                    "on-primary": "#002e69",
+                    "error": "#ffb4ab",
+                    "on-tertiary-fixed-variant": "#6a3b00",
+                    "surface-bright": "#393939",
+                    "surface-container-low": "#1c1b1b",
+                    "on-error": "#690005",
+                    "on-tertiary": "#4b2800",
+                    "error-container": "#93000a",
+                    "on-secondary-fixed-variant": "#00531c",
+                    "tertiary": "#ffb874",
+                    "primary-container": "#4b8eff",
+                    "surface-container-high": "#2a2a2a",
+                    "surface-container-highest": "#353534",
+                    "on-surface-variant": "#c1c6d7",
+                    "on-primary-fixed-variant": "#004493",
+                    "primary": "#adc6ff",
+                    "outline-variant": "#414755",
+                    "on-tertiary-fixed": "#2d1600",
+                    "tertiary-container": "#d47b00",
+                    "on-background": "#e5e2e1",
+                    "primary-fixed": "#d8e2ff",
+                    "on-primary-fixed": "#001a41",
+                    "tertiary-fixed-dim": "#ffb874",
+                    "secondary": "#53e16f",
+                    "on-secondary": "#003911",
+                    "surface": "#131313",
+                    "on-secondary-fixed": "#002107",
+                    "secondary-container": "#05b046",
+                    "secondary-fixed": "#72fe88",
+                    "background": "#131313",
+                    "surface-tint": "#adc6ff",
+                    "tertiary-fixed": "#ffdcbf",
+                    "surface-container": "#201f1f",
+                    "secondary-fixed-dim": "#53e16f",
+                    "surface-variant": "#353534",
+                    "inverse-surface": "#e5e2e1",
+                    "on-tertiary-container": "#412200",
+                    "surface-dim": "#131313",
+                    "surface-container-lowest": "#0e0e0e",
+                    "inverse-on-surface": "#313030",
+                    "on-error-container": "#ffdad6",
+                    "primary-fixed-dim": "#adc6ff",
+                    "on-surface": "#e5e2e1",
+                    "outline": "#8b90a0"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "lg": "24px",
+                    "gutter-mobile": "12px",
+                    "md": "16px",
+                    "margin-mobile": "16px",
+                    "xl": "32px",
+                    "base": "8px",
+                    "sm": "8px",
+                    "xs": "4px"
+            },
+            "fontFamily": {
+                    "headline-sm": ["Inter"],
+                    "label-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-lg": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "mono-data": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "label-md": ["11px", {"lineHeight": "14px", "fontWeight": "500"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "label-lg": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "mono-data": ["14px", {"lineHeight": "20px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #131313;
+            color: #e5e2e1;
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .glass-effect {
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-nav-icon {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="flex flex-col min-h-screen">
+<!-- Top App Bar -->
+<header class="w-full top-0 sticky z-50 bg-background dark:bg-background border-b border-outline-variant dark:border-outline-variant flex items-center justify-between px-md h-14">
+<div class="flex items-center gap-md">
+<button class="text-primary dark:text-primary active:scale-95 transition-transform p-2 hover:bg-surface-container dark:hover:bg-surface-container rounded-full transition-colors">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h1 class="font-headline-sm text-headline-sm font-bold text-on-surface dark:text-on-surface">Trading Journal</h1>
+</div>
+<button class="text-primary dark:text-primary active:scale-95 transition-transform p-2 hover:bg-surface-container dark:hover:bg-surface-container rounded-full transition-colors">
+<span class="material-symbols-outlined">search</span>
+</button>
+</header>
+<!-- Main Content (Canvas) -->
+<main class="flex-grow flex flex-col items-center justify-center px-margin-mobile pb-32">
+<!-- Empty State Container -->
+<div class="max-w-md w-full flex flex-col items-center text-center">
+<!-- Hero Illustration (Bento/Card Style) -->
+<div class="relative w-full aspect-square max-w-[280px] mb-xl flex items-center justify-center">
+<!-- Background ambient glow -->
+<div class="absolute inset-0 bg-primary/10 blur-[60px] rounded-full"></div>
+<!-- Illustration Frame -->
+<div class="relative z-10 w-full h-full border border-outline-variant rounded-[32px] overflow-hidden bg-surface-container-low flex items-center justify-center shadow-xl">
+<img class="w-full h-full object-cover" data-alt="A cinematic 3D render of a futuristic minimalist telescope made of dark matte chrome and brushed obsidian, pointing upwards towards a galaxy of glowing financial data points and stock tickers. The lighting is moody and high-contrast, utilizing the primary blue color palette of the trading app, with soft volumetric glows and sharp highlights reflecting off the metallic surfaces. The background is a deep charcoal grey with subtle bokeh patterns, evoking a sense of exploration and mathematical precision in a modern trading dashboard aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCELNEzyHxOmZCEWaGPRz2RbeGuvG6OGdt4ajQCXHRITnfOUn3XmOOH5ozor031pG6UYtTPZqMBbSS1lNCyP0ZgK9krRu9Dan49V6yNtR995H_mxi3b20x7oM85iat-5HGPmVxZFPLzFPJBkwR0x12HfnJOlj3khQW3qJh8nplcQFGjkTDtsOczticQRmwagxc7zj3PmCvx93QFGLtmlm-WMRcvmVTJaO4YWgODRCMAGbTZPEcW6kWxm6gKecy5HuoPhFpA2Hm9PJE"/>
+</div>
+</div>
+<!-- Content -->
+<div class="space-y-sm">
+<h2 class="font-headline-md text-headline-md text-on-surface">No pairs tracked yet</h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-[300px] mx-auto">
+                    Add your first trading pair to start journaling your market analysis.
+                </p>
+</div>
+<!-- CTA Button -->
+<button class="mt-xl h-14 px-xl bg-primary-container hover:opacity-90 active:scale-95 transition-all text-on-primary-container font-headline-sm rounded-full flex items-center gap-base">
+<span class="material-symbols-outlined">add</span>
+                Add Pair
+            </button>
+</div>
+</main>
+<!-- Bottom Navigation -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-lg pb-safe h-[72px] bg-surface/70 dark:bg-surface/70 backdrop-blur-xl border-t border-outline-variant dark:border-outline-variant">
+<!-- Home (Active) -->
+<a class="flex flex-col items-center justify-center text-primary dark:text-primary font-bold hover:opacity-80 transition-opacity active:scale-90 transition-all duration-200" href="#">
+<span class="material-symbols-outlined active-nav-icon">home</span>
+<span class="font-label-lg text-label-lg mt-1">Home</span>
+</a>
+<!-- Journal -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant hover:opacity-80 transition-opacity active:scale-90 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">query_stats</span>
+<span class="font-label-lg text-label-lg mt-1">Journal</span>
+</a>
+<!-- Alerts -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant hover:opacity-80 transition-opacity active:scale-90 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">notifications</span>
+<span class="font-label-lg text-label-lg mt-1">Alerts</span>
+</a>
+<!-- Settings -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant hover:opacity-80 transition-opacity active:scale-90 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-lg text-label-lg mt-1">Settings</span>
+</a>
+</nav>
+<!-- Simple JavaScript for micro-interactions -->
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const buttons = document.querySelectorAll('button, a');
+            buttons.forEach(button => {
+                button.addEventListener('touchstart', () => {
+                    button.classList.add('opacity-70');
+                });
+                button.addEventListener('touchend', () => {
+                    button.classList.remove('opacity-70');
+                });
+            });
+        });
+    </script>
+</body></html>

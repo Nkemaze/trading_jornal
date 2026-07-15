@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<title>Trading Journal - Settings</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary-container": "#003a11",
+                    "on-primary-container": "#00285c",
+                    "inverse-primary": "#005bc1",
+                    "on-primary": "#002e69",
+                    "error": "#ffb4ab",
+                    "on-tertiary-fixed-variant": "#6a3b00",
+                    "surface-bright": "#393939",
+                    "surface-container-low": "#1c1b1b",
+                    "on-error": "#690005",
+                    "on-tertiary": "#4b2800",
+                    "error-container": "#93000a",
+                    "on-secondary-fixed-variant": "#00531c",
+                    "tertiary": "#ffb874",
+                    "primary-container": "#4b8eff",
+                    "surface-container-high": "#2a2a2a",
+                    "surface-container-highest": "#353534",
+                    "on-surface-variant": "#c1c6d7",
+                    "on-primary-fixed-variant": "#004493",
+                    "primary": "#adc6ff",
+                    "outline-variant": "#414755",
+                    "on-tertiary-fixed": "#2d1600",
+                    "tertiary-container": "#d47b00",
+                    "on-background": "#e5e2e1",
+                    "primary-fixed": "#d8e2ff",
+                    "on-primary-fixed": "#001a41",
+                    "tertiary-fixed-dim": "#ffb874",
+                    "secondary": "#53e16f",
+                    "on-secondary": "#003911",
+                    "surface": "#131313",
+                    "on-secondary-fixed": "#002107",
+                    "secondary-container": "#05b046",
+                    "secondary-fixed": "#72fe88",
+                    "background": "#131313",
+                    "surface-tint": "#adc6ff",
+                    "tertiary-fixed": "#ffdcbf",
+                    "surface-container": "#201f1f",
+                    "secondary-fixed-dim": "#53e16f",
+                    "surface-variant": "#353534",
+                    "inverse-surface": "#e5e2e1",
+                    "on-tertiary-container": "#412200",
+                    "surface-dim": "#131313",
+                    "surface-container-lowest": "#0e0e0e",
+                    "inverse-on-surface": "#313030",
+                    "on-error-container": "#ffdad6",
+                    "primary-fixed-dim": "#adc6ff",
+                    "on-surface": "#e5e2e1",
+                    "outline": "#8b90a0"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "lg": "24px",
+                    "gutter-mobile": "12px",
+                    "md": "16px",
+                    "margin-mobile": "16px",
+                    "xl": "32px",
+                    "base": "8px",
+                    "sm": "8px",
+                    "xs": "4px"
+            },
+            "fontFamily": {
+                    "headline-sm": ["Inter"],
+                    "label-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-lg": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "mono-data": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "label-md": ["11px", {"lineHeight": "14px", "fontWeight": "500"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "label-lg": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "mono-data": ["14px", {"lineHeight": "20px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #121212;
+            color: #e5e2e1;
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .settings-card {
+            background: #1E1E1E;
+            border: 1px solid #2C2C2E;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .settings-card:active {
+            background: #2C2C2E;
+        }
+        .toggle-checkbox:checked + .toggle-track {
+            background-color: #adc6ff;
+        }
+        .toggle-checkbox:checked + .toggle-track .toggle-thumb {
+            transform: translateX(1.25rem);
+            background-color: #002e69;
+        }
+        .glass-header {
+            background: rgba(19, 19, 19, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen pb-32">
+<!-- Top App Bar -->
+<header class="w-full top-0 sticky z-40 bg-background border-b border-outline-variant flex items-center justify-between px-md h-14">
+<div class="flex items-center gap-md">
+<button class="material-symbols-outlined text-primary active:scale-95 transition-transform">menu</button>
+<h1 class="font-headline-sm text-headline-sm font-bold text-on-surface">Settings</h1>
+</div>
+<div class="flex items-center gap-md">
+<button class="material-symbols-outlined text-primary active:scale-95 transition-transform">search</button>
+</div>
+</header>
+<main class="max-w-2xl mx-auto px-margin-mobile pt-lg space-y-xl">
+<!-- Preferences Category -->
+<section class="space-y-md">
+<h2 class="font-label-lg text-label-lg text-primary uppercase tracking-widest px-xs">Preferences</h2>
+<div class="rounded-xl overflow-hidden border border-outline-variant">
+<!-- Notifications -->
+<div class="settings-card flex items-center justify-between p-md">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">notifications</span>
+</div>
+<div>
+<p class="font-body-lg text-body-lg text-on-surface">Notifications</p>
+<p class="font-body-md text-body-md text-on-surface-variant">Alerts, updates and news</p>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only toggle-checkbox" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest rounded-full transition-colors toggle-track flex items-center px-1">
+<div class="w-4 h-4 bg-on-surface-variant rounded-full transition-transform toggle-thumb"></div>
+</div>
+</label>
+</div>
+<!-- Market Refresh -->
+<div class="settings-card flex items-center justify-between p-md border-t border-outline-variant">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">sync</span>
+</div>
+<div>
+<p class="font-body-lg text-body-lg text-on-surface">Market Refresh</p>
+<p class="font-body-md text-body-md text-on-surface-variant">Background data sync frequency</p>
+</div>
+</div>
+<div class="flex items-center gap-xs text-on-surface-variant">
+<span class="font-body-md text-body-md">5s</span>
+<span class="material-symbols-outlined">chevron_right</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Data Category -->
+<section class="space-y-md">
+<h2 class="font-label-lg text-label-lg text-primary uppercase tracking-widest px-xs">Data</h2>
+<div class="rounded-xl overflow-hidden border border-outline-variant">
+<!-- Storage -->
+<button class="settings-card w-full flex items-center justify-between p-md text-left">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">database</span>
+</div>
+<div>
+<p class="font-body-lg text-body-lg text-on-surface">Storage</p>
+<p class="font-body-md text-body-md text-on-surface-variant">42.5 MB used of 1 GB</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</button>
+<!-- Export -->
+<button class="settings-card w-full flex items-center justify-between p-md border-t border-outline-variant text-left">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">file_export</span>
+</div>
+<div>
+<p class="font-body-lg text-body-lg text-on-surface">Export</p>
+<p class="font-body-md text-body-md text-on-surface-variant">Download trading history as CSV</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</button>
+</div>
+</section>
+<!-- Security Category -->
+<section class="space-y-md">
+<h2 class="font-label-lg text-label-lg text-primary uppercase tracking-widest px-xs">Security</h2>
+<div class="rounded-xl overflow-hidden border border-outline-variant">
+<!-- Privacy Policy -->
+<button class="settings-card w-full flex items-center justify-between p-md text-left">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">policy</span>
+</div>
+<div>
+<p class="font-body-lg text-body-lg text-on-surface">Privacy Policy</p>
+<p class="font-body-md text-body-md text-on-surface-variant">How we handle your data</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</button>
+</div>
+</section>
+<!-- About Category -->
+<section class="space-y-md">
+<h2 class="font-label-lg text-label-lg text-primary uppercase tracking-widest px-xs">About</h2>
+<div class="rounded-xl overflow-hidden border border-outline-variant">
+<!-- App Version -->
+<div class="settings-card flex items-center justify-between p-md">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">info</span>
+</div>
+<div>
+<p class="font-body-lg text-body-lg text-on-surface">App Version</p>
+<p class="font-body-md text-body-md text-on-surface-variant">Build 2.4.0 (Stable)</p>
+</div>
+</div>
+<span class="font-mono-data text-mono-data text-primary">v2.4</span>
+</div>
+</div>
+</section>
+<!-- Danger Zone -->
+<div class="pt-lg pb-xl">
+<button class="w-full h-14 bg-error-container text-on-error-container rounded-full font-label-lg text-label-lg flex items-center justify-center gap-sm active:scale-95 transition-all">
+<span class="material-symbols-outlined">logout</span>
+                Sign Out
+            </button>
+<p class="text-center mt-md text-on-surface-variant font-label-md text-label-md">
+                Logged in as trader_0x42...
+            </p>
+</div>
+</main>
+<!-- Bottom Navigation Shell -->
+<nav class="fixed bottom-0 left-0 w-full z-50 h-[72px] bg-surface/70 backdrop-blur-xl border-t border-outline-variant flex justify-around items-center px-lg pb-safe">
+<!-- Home -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:opacity-80 transition-opacity active:scale-90" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-lg text-label-lg mt-1">Home</span>
+</a>
+<!-- Journal -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:opacity-80 transition-opacity active:scale-90" href="#">
+<span class="material-symbols-outlined">query_stats</span>
+<span class="font-label-lg text-label-lg mt-1">Journal</span>
+</a>
+<!-- Alerts -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:opacity-80 transition-opacity active:scale-90" href="#">
+<span class="material-symbols-outlined">notifications</span>
+<span class="font-label-lg text-label-lg mt-1">Alerts</span>
+</a>
+<!-- Settings (Active) -->
+<a class="flex flex-col items-center justify-center text-primary font-bold hover:opacity-80 transition-opacity active:scale-90" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-lg text-label-lg mt-1">Settings</span>
+</a>
+</nav>
+<script>
+        // Micro-interaction for toggles
+        document.querySelectorAll('.toggle-checkbox').forEach(toggle => {
+            toggle.addEventListener('change', (e) => {
+                const parent = e.target.closest('.settings-card');
+                if(e.target.checked) {
+                    console.log('Feature enabled');
+                } else {
+                    console.log('Feature disabled');
+                }
+            });
+        });
+
+        // Add ripple effect logic (simplified)
+        document.querySelectorAll('button, .settings-card').forEach(button => {
+            button.addEventListener('mousedown', function(e) {
+                this.classList.add('opacity-70');
+            });
+            button.addEventListener('mouseup', function(e) {
+                this.classList.remove('opacity-70');
+            });
+            button.addEventListener('mouseleave', function(e) {
+                this.classList.remove('opacity-70');
+            });
+        });
+    </script>
+</body></html>

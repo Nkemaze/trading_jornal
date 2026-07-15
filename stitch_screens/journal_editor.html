@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Trading Journal - Entry Editor</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary-container": "#003a11",
+                    "on-primary-container": "#00285c",
+                    "inverse-primary": "#005bc1",
+                    "on-primary": "#002e69",
+                    "error": "#ffb4ab",
+                    "on-tertiary-fixed-variant": "#6a3b00",
+                    "surface-bright": "#393939",
+                    "surface-container-low": "#1c1b1b",
+                    "on-error": "#690005",
+                    "on-tertiary": "#4b2800",
+                    "error-container": "#93000a",
+                    "on-secondary-fixed-variant": "#00531c",
+                    "tertiary": "#ffb874",
+                    "primary-container": "#4b8eff",
+                    "surface-container-high": "#2a2a2a",
+                    "surface-container-highest": "#353534",
+                    "on-surface-variant": "#c1c6d7",
+                    "on-primary-fixed-variant": "#004493",
+                    "primary": "#adc6ff",
+                    "outline-variant": "#414755",
+                    "on-tertiary-fixed": "#2d1600",
+                    "tertiary-container": "#d47b00",
+                    "on-background": "#e5e2e1",
+                    "primary-fixed": "#d8e2ff",
+                    "on-primary-fixed": "#001a41",
+                    "tertiary-fixed-dim": "#ffb874",
+                    "secondary": "#53e16f",
+                    "on-secondary": "#003911",
+                    "surface": "#131313",
+                    "on-secondary-fixed": "#002107",
+                    "secondary-container": "#05b046",
+                    "secondary-fixed": "#72fe88",
+                    "background": "#131313",
+                    "surface-tint": "#adc6ff",
+                    "tertiary-fixed": "#ffdcbf",
+                    "surface-container": "#201f1f",
+                    "secondary-fixed-dim": "#53e16f",
+                    "surface-variant": "#353534",
+                    "inverse-surface": "#e5e2e1",
+                    "on-tertiary-container": "#412200",
+                    "surface-dim": "#131313",
+                    "surface-container-lowest": "#0e0e0e",
+                    "inverse-on-surface": "#313030",
+                    "on-error-container": "#ffdad6",
+                    "primary-fixed-dim": "#adc6ff",
+                    "on-surface": "#e5e2e1",
+                    "outline": "#8b90a0"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "lg": "24px",
+                    "gutter-mobile": "12px",
+                    "md": "16px",
+                    "margin-mobile": "16px",
+                    "xl": "32px",
+                    "base": "8px",
+                    "sm": "8px",
+                    "xs": "4px"
+            },
+            "fontFamily": {
+                    "headline-sm": ["Inter"],
+                    "label-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-lg": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "mono-data": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "label-md": ["11px", {"lineHeight": "14px", "fontWeight": "500"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "label-lg": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "mono-data": ["14px", {"lineHeight": "20px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+      body {
+        background-color: #121212;
+        color: #e5e2e1;
+        -webkit-font-smoothing: antialiased;
+        overflow: hidden; /* Writing mode focus */
+      }
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 4px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #2C2C2E;
+        border-radius: 10px;
+      }
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        vertical-align: middle;
+      }
+      .fade-in { animation: fadeIn 0.4s ease-out; }
+      @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+      
+      /* Focus transition for distraction-free */
+      .editor-active { opacity: 1 !important; }
+      .editor-inactive { opacity: 0.3; transition: opacity 0.5s ease; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface font-body-md">
+<!-- Top AppBar Shell (Contextual Task Shell) -->
+<header class="w-full top-0 sticky bg-background border-b border-outline-variant flex items-center justify-between px-md h-14 z-50">
+<div class="flex items-center gap-base">
+<button aria-label="Back" class="material-symbols-outlined text-on-surface hover:bg-surface-container-high p-xs rounded-full transition-colors active:scale-95">close</button>
+<h1 class="font-headline-sm text-headline-sm font-bold text-on-surface">Journal Entry</h1>
+</div>
+<div class="flex items-center gap-md">
+<div class="flex items-center gap-xs text-on-surface-variant font-label-lg transition-opacity duration-500" id="autosave-status">
+<span class="material-symbols-outlined text-[14px]">cloud_done</span>
+<span>Autosaved</span>
+</div>
+<button class="bg-primary text-on-primary px-md py-xs rounded-full font-label-lg active:scale-95 transition-all">Publish</button>
+</div>
+</header>
+<!-- Main Writing Canvas -->
+<main class="h-[calc(100vh-120px)] w-full max-w-3xl mx-auto px-margin-mobile pt-xl overflow-y-auto custom-scrollbar fade-in">
+<!-- Metadata Header -->
+<div class="mb-xl">
+<div class="text-on-surface-variant font-mono-data text-label-lg mb-xs uppercase tracking-widest">October 24, 2023 • 09:42 AM</div>
+<input class="w-full bg-transparent border-none focus:ring-0 text-headline-lg font-headline-lg placeholder:text-outline p-0 mb-sm" placeholder="Entry Title (Optional)" type="text"/>
+<div class="flex flex-wrap gap-xs">
+<span class="bg-surface-container-high text-primary px-sm py-xs rounded-lg text-label-md flex items-center gap-xs">
+                    #nasdaq
+                    <button class="material-symbols-outlined text-[12px]">close</button>
+</span>
+<span class="bg-surface-container-high text-primary px-sm py-xs rounded-lg text-label-md flex items-center gap-xs">
+                    #scalping
+                    <button class="material-symbols-outlined text-[12px]">close</button>
+</span>
+</div>
+</div>
+<!-- Editor Content -->
+<section class="relative group" id="editor-container">
+<label class="sr-only" for="observations">Market Observations</label>
+<textarea class="w-full bg-transparent border-none focus:ring-0 text-body-lg font-body-lg leading-relaxed placeholder:text-outline p-0 resize-none min-h-[400px] custom-scrollbar" id="observations" oninput="handleTyping()" placeholder="Start typing your market observations..."></textarea>
+<!-- Contextual Toolbar that appears near cursor or selection (Simplified for distraction-free) -->
+<div class="absolute -left-12 top-0 flex flex-col gap-sm opacity-0 group-hover:opacity-40 transition-opacity">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary">format_list_bulleted</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary">format_bold</button>
+</div>
+</section>
+<!-- Image Previews / Attachments Section -->
+<section class="mt-xl pb-xl border-t border-outline-variant/30 pt-lg" id="attachments">
+<h3 class="font-label-lg text-on-surface-variant uppercase mb-md">Attached Visuals</h3>
+<div class="grid grid-cols-2 md:grid-cols-3 gap-md">
+<!-- Attachment Card 1 -->
+<div class="relative group aspect-video rounded-xl overflow-hidden border border-outline-variant bg-surface-container-low hover:border-primary transition-all">
+<div class="w-full h-full bg-cover bg-center opacity-80 group-hover:opacity-100 transition-opacity" data-alt="A professional trading terminal screenshot showing a detailed 1-minute candlestick chart for the NASDAQ-100 index. The chart features green and red candles with a series of technical indicators like RSI and Moving Averages overlaid. The lighting is dim and focused, reflecting a high-stakes professional trading environment with a deep charcoal and blue aesthetic." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAPeodXe9qjDiZhvsD1i3UgAjsO9dNM7t5Vwaci763TW3et8apZ2yNXQXz90Pu3ChzRCmSvWklH1JRTxqnKS7Vv7zQ8YwthWhcivV33PqhghWr8gDvE23gYp_Ky1UjJINTsn7CfjYmkQNBQ4Dp6Xrq6qEILL3JB7XK-PfNJcmnDCrQzOjzAUZuDwuwkINxSHr8n0wdRNc08dNempY0jQgsgl1OYl0R7SsI3w2MMY8K_IscjSt967VDMSxW_ejVJhNZ40f1vdrf-bh8')"></div>
+<button class="absolute top-sm right-sm bg-background/80 text-on-surface p-xs rounded-full material-symbols-outlined text-[18px] opacity-0 group-hover:opacity-100 transition-opacity">close</button>
+<div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-sm">
+<p class="text-label-md truncate">nasdaq_rejection_5m.png</p>
+</div>
+</div>
+<!-- Attachment Card 2 -->
+<div class="relative group aspect-video rounded-xl overflow-hidden border border-outline-variant bg-surface-container-low hover:border-primary transition-all">
+<div class="w-full h-full bg-cover bg-center opacity-80 group-hover:opacity-100 transition-opacity" data-alt="A macro-economic news feed captured on a sleek digital interface. The image shows a headlines list about interest rate hikes and inflation data, styled in a minimalist dark-mode theme with vibrant blue accents. The visual conveys the analytical depth and speed of modern financial news monitoring in a corporate minimalist style." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCKXRYila0bK4QMuE2lIJxo9kH_KA9I_4I1ZukjbGx0pw4ysFGlcQjkZ9h4Lt_Eyrt9AsIQCWY5lSCHxyaYUiFzBuxKqop61sTI6Mz4WUM6c_2WpPdumTmCrwiEp2-Ui52b1G0dWtw0tjzmK7A-D4H7BN_UkaTcPrVAOjK_ir1reiWMoyZ_3vR95Amfyl7osfS5vgmjUILxE4U1swk-sTOoFugn1eYt4OJf3-f9M8eE0rCNs9HSbPqPgL8h1wNn7FO5TyXFX5Yg_NY')"></div>
+<button class="absolute top-sm right-sm bg-background/80 text-on-surface p-xs rounded-full material-symbols-outlined text-[18px] opacity-0 group-hover:opacity-100 transition-opacity">close</button>
+<div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-sm">
+<p class="text-label-md truncate">fomc_sentiment.jpg</p>
+</div>
+</div>
+<!-- Empty State / Add Placeholder -->
+<button class="aspect-video rounded-xl border border-dashed border-outline-variant bg-surface-container-lowest flex flex-col items-center justify-center gap-xs hover:bg-surface-container-low hover:border-outline transition-all text-on-surface-variant">
+<span class="material-symbols-outlined text-[32px]">add_photo_alternate</span>
+<span class="text-label-md">Drop chart here</span>
+</button>
+</div>
+</section>
+</main>
+<!-- Floating Bottom Toolbar -->
+<div class="fixed bottom-0 left-0 w-full px-margin-mobile pb-margin-mobile flex justify-center z-50">
+<div class="bg-surface-container-highest/80 backdrop-blur-xl border border-outline-variant h-[64px] px-lg rounded-full flex items-center gap-xl shadow-2xl">
+<!-- Tool: Attach Image -->
+<button class="group flex items-center gap-sm text-on-surface-variant hover:text-primary transition-colors active:scale-95">
+<span class="material-symbols-outlined">add_photo_alternate</span>
+<span class="font-label-lg hidden md:inline">Attach Image</span>
+</button>
+<div class="w-[1px] h-6 bg-outline-variant"></div>
+<!-- Tool: Reference Entry -->
+<button class="group flex items-center gap-sm text-on-surface-variant hover:text-primary transition-colors active:scale-95">
+<span class="material-symbols-outlined">reply</span>
+<span class="font-label-lg hidden md:inline">Reference Entry</span>
+</button>
+<div class="w-[1px] h-6 bg-outline-variant"></div>
+<!-- Tool: Add Tag -->
+<button class="group flex items-center gap-sm text-on-surface-variant hover:text-primary transition-colors active:scale-95">
+<span class="material-symbols-outlined">label</span>
+<span class="font-label-lg hidden md:inline">Add Tag</span>
+</button>
+<div class="w-[1px] h-6 bg-outline-variant"></div>
+<!-- Extra tools -->
+<div class="flex gap-md">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-on-surface transition-colors">sentiment_satisfied</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-on-surface transition-colors">more_vert</button>
+</div>
+</div>
+</div>
+<!-- Background Atmospheric Effect (Subtle) -->
+<div class="fixed inset-0 -z-10 pointer-events-none opacity-20">
+
+</div>
+<script>
+        // Simple micro-interactions
+        function handleTyping() {
+            const status = document.getElementById('autosave-status');
+            const icon = status.querySelector('.material-symbols-outlined');
+            const text = status.querySelector('span:last-child');
+            
+            // Show "Saving..." state
+            status.classList.remove('opacity-40');
+            icon.innerText = 'sync';
+            icon.classList.add('animate-spin');
+            text.innerText = 'Saving...';
+
+            // Debounce simulation for "Autosaved"
+            clearTimeout(window.saveTimeout);
+            window.saveTimeout = setTimeout(() => {
+                icon.innerText = 'cloud_done';
+                icon.classList.remove('animate-spin');
+                text.innerText = 'Autosaved';
+            }, 1500);
+        }
+
+        // Distraction-free effect: Fade non-editor elements when typing
+        const editor = document.getElementById('observations');
+        const header = document.querySelector('header');
+        const attachments = document.getElementById('attachments');
+
+        editor.addEventListener('focus', () => {
+            header.style.opacity = '0.5';
+            attachments.style.opacity = '0.3';
+        });
+
+        editor.addEventListener('blur', () => {
+            header.style.opacity = '1';
+            attachments.style.opacity = '1';
+        });
+        
+        // Auto-resize textarea
+        editor.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+    </script>
+</body></html>

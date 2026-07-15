@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<title>Trading Journal - Alerts</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary-container": "#003a11",
+                    "on-primary-container": "#00285c",
+                    "inverse-primary": "#005bc1",
+                    "on-primary": "#002e69",
+                    "error": "#ffb4ab",
+                    "on-tertiary-fixed-variant": "#6a3b00",
+                    "surface-bright": "#393939",
+                    "surface-container-low": "#1c1b1b",
+                    "on-error": "#690005",
+                    "on-tertiary": "#4b2800",
+                    "error-container": "#93000a",
+                    "on-secondary-fixed-variant": "#00531c",
+                    "tertiary": "#ffb874",
+                    "primary-container": "#4b8eff",
+                    "surface-container-high": "#2a2a2a",
+                    "surface-container-highest": "#353534",
+                    "on-surface-variant": "#c1c6d7",
+                    "on-primary-fixed-variant": "#004493",
+                    "primary": "#adc6ff",
+                    "outline-variant": "#414755",
+                    "on-tertiary-fixed": "#2d1600",
+                    "tertiary-container": "#d47b00",
+                    "on-background": "#e5e2e1",
+                    "primary-fixed": "#d8e2ff",
+                    "on-primary-fixed": "#001a41",
+                    "tertiary-fixed-dim": "#ffb874",
+                    "secondary": "#53e16f",
+                    "on-secondary": "#003911",
+                    "surface": "#131313",
+                    "on-secondary-fixed": "#002107",
+                    "secondary-container": "#05b046",
+                    "secondary-fixed": "#72fe88",
+                    "background": "#131313",
+                    "surface-tint": "#adc6ff",
+                    "tertiary-fixed": "#ffdcbf",
+                    "surface-container": "#201f1f",
+                    "secondary-fixed-dim": "#53e16f",
+                    "surface-variant": "#353534",
+                    "inverse-surface": "#e5e2e1",
+                    "on-tertiary-container": "#412200",
+                    "surface-dim": "#131313",
+                    "surface-container-lowest": "#0e0e0e",
+                    "inverse-on-surface": "#313030",
+                    "on-error-container": "#ffdad6",
+                    "primary-fixed-dim": "#adc6ff",
+                    "on-surface": "#e5e2e1",
+                    "outline": "#8b90a0"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "lg": "24px",
+                    "gutter-mobile": "12px",
+                    "md": "16px",
+                    "margin-mobile": "16px",
+                    "xl": "32px",
+                    "base": "8px",
+                    "sm": "8px",
+                    "xs": "4px"
+            },
+            "fontFamily": {
+                    "headline-sm": ["Inter"],
+                    "label-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-lg": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "mono-data": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "label-md": ["11px", {"lineHeight": "14px", "fontWeight": "500"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "label-lg": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "mono-data": ["14px", {"lineHeight": "20px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #121212;
+            color: #e5e2e1;
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(30, 30, 30, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid #2C2C2E;
+        }
+        .toggle-switch:checked + .toggle-slider {
+            background-color: #4b8eff;
+        }
+        .toggle-switch:checked + .toggle-slider::before {
+            transform: translateX(20px);
+            background-color: #00285c;
+        }
+        .safe-bottom {
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="min-h-screen pb-32">
+<!-- Top App Bar -->
+<header class="w-full top-0 sticky z-40 bg-background dark:bg-background border-b border-outline-variant dark:border-outline-variant flex items-center justify-between px-md h-14">
+<div class="flex items-center gap-md">
+<button class="p-2 active:scale-95 transition-transform hover:bg-surface-container rounded-full">
+<span class="material-symbols-outlined text-primary">menu</span>
+</button>
+<h1 class="font-headline-sm text-headline-sm font-bold text-on-surface">Alerts</h1>
+</div>
+<button class="p-2 active:scale-95 transition-transform hover:bg-surface-container rounded-full">
+<span class="material-symbols-outlined text-primary">search</span>
+</button>
+</header>
+<main class="px-margin-mobile mt-lg space-y-xl max-w-2xl mx-auto">
+<!-- Price Alerts Section -->
+<section class="space-y-md">
+<div class="flex items-center justify-between">
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Price Alerts</h2>
+<span class="text-label-lg font-label-lg text-primary uppercase tracking-wider">Active (1)</span>
+</div>
+<div class="glass-panel p-md rounded-xl flex items-center justify-between transition-all hover:border-primary/50">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">trending_up</span>
+</div>
+<div>
+<h3 class="font-body-lg text-body-lg text-on-surface">BTC/USD above $65,000</h3>
+<p class="font-label-lg text-label-lg text-on-surface-variant">Created 2 days ago</p>
+</div>
+</div>
+<label class="relative inline-block w-11 h-6 cursor-pointer">
+<input checked="" class="sr-only toggle-switch peer" type="checkbox"/>
+<div class="toggle-slider absolute inset-0 bg-outline rounded-full transition-colors duration-200 before:content-[''] before:absolute before:left-0.5 before:bottom-0.5 before:bg-white before:w-5 before:h-5 before:rounded-full before:transition-transform before:duration-200"></div>
+</label>
+</div>
+</section>
+<!-- Reminders Section -->
+<section class="space-y-md">
+<div class="flex items-center justify-between">
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Reminders</h2>
+<span class="text-label-lg font-label-lg text-on-surface-variant uppercase tracking-wider">Recurring</span>
+</div>
+<div class="glass-panel p-md rounded-xl flex items-center justify-between border-l-4 border-l-secondary transition-all hover:border-outline">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary">update</span>
+</div>
+<div>
+<h3 class="font-body-lg text-body-lg text-on-surface">Market Close Review</h3>
+<p class="font-label-lg text-label-lg text-on-surface-variant">4:00 PM Daily</p>
+</div>
+</div>
+<button class="p-2 text-on-surface-variant hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+</section>
+<!-- Empty State (Conditional Display Example) -->
+<section class="hidden py-xl flex flex-col items-center text-center space-y-md" id="empty-state">
+<div class="w-48 h-48 relative">
+<div class="absolute inset-0 bg-primary/5 rounded-full blur-3xl"></div>
+<img class="relative z-10 w-full h-full object-contain opacity-60 grayscale brightness-75" data-alt="A clean, minimalist 3D isometric illustration of a digital notification bell with no alerts, rendered in a dark high-tech aesthetic. The background is deep charcoal with subtle neon blue highlights. Floating geometric shapes create a sense of depth and modern mathematical precision, consistent with a professional trading platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCA45Czu9HXg6olpI7T_XomT_fOwDeaRzXqPUwOxMIFHp3GW25DeFGwTOQrHj0f3PNkJdx4PVpXsSHs--UNxlz04DLs6EUPrm48V2XE7SqUaQKLk7Cjn4so8andwMwnLimCAamROw-lRXlqM0V_JjgVoI6uqWU99QvS2dnpG-fEmNZkXkQkW5z_N0TLWeCtQ8E2hNcfj3tAOBum8KkGP7qS4dTz8GQgUGTLf7dmzdqwx7g4AsDVI-qUXhYAE45NCgdUpXdO4kAG7mI"/>
+</div>
+<div class="space-y-xs">
+<h4 class="font-headline-sm text-headline-sm text-on-surface">No alerts set</h4>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-[240px]">Get notified about price movements and daily tasks by creating your first alert.</p>
+</div>
+<button class="mt-md px-lg py-sm bg-primary text-on-primary font-label-lg text-label-lg rounded-full active:scale-95 transition-transform">
+                Get Started
+            </button>
+</section>
+</main>
+<!-- FAB -->
+<button class="fixed bottom-24 right-6 w-14 h-14 bg-primary text-on-primary rounded-full shadow-lg shadow-primary/20 flex items-center justify-center active:scale-90 transition-all z-50">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">add_alert</span>
+</button>
+<!-- Bottom Navigation -->
+<nav class="fixed bottom-0 left-0 w-full z-50 h-[72px] bg-surface/70 dark:bg-surface/70 backdrop-blur-xl border-t border-outline-variant flex justify-around items-center px-lg pb-safe">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:opacity-80 transition-opacity active:scale-90 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-lg text-label-lg">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:opacity-80 transition-opacity active:scale-90 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">query_stats</span>
+<span class="font-label-lg text-label-lg">Journal</span>
+</a>
+<!-- ACTIVE STATE: Alerts -->
+<a class="flex flex-col items-center justify-center text-primary font-bold hover:opacity-80 transition-opacity active:scale-90 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">notifications</span>
+<span class="font-label-lg text-label-lg">Alerts</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:opacity-80 transition-opacity active:scale-90 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-lg text-label-lg">Settings</span>
+</a>
+</nav>
+<script>
+        // Micro-interactions
+        document.querySelectorAll('.toggle-switch').forEach(toggle => {
+            toggle.addEventListener('change', (e) => {
+                const parent = e.target.closest('.glass-panel');
+                if(!e.target.checked) {
+                    parent.style.opacity = '0.5';
+                    parent.style.filter = 'grayscale(1)';
+                } else {
+                    parent.style.opacity = '1';
+                    parent.style.filter = 'none';
+                }
+            });
+        });
+
+        // Simple visibility toggle for empty state demonstration
+        // (In a real app, this would be based on data state)
+        const checkEmptyState = () => {
+            const listItems = document.querySelectorAll('.glass-panel');
+            const emptyState = document.getElementById('empty-state');
+            const sections = document.querySelectorAll('section:not(#empty-state)');
+            
+            if (listItems.length === 0) {
+                emptyState.classList.remove('hidden');
+                sections.forEach(s => s.classList.add('hidden'));
+            }
+        };
+    </script>
+</body></html>

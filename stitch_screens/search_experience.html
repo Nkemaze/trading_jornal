@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Trading Journal - Search</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary-container": "#003a11",
+                    "on-primary-container": "#00285c",
+                    "inverse-primary": "#005bc1",
+                    "on-primary": "#002e69",
+                    "error": "#ffb4ab",
+                    "on-tertiary-fixed-variant": "#6a3b00",
+                    "surface-bright": "#393939",
+                    "surface-container-low": "#1c1b1b",
+                    "on-error": "#690005",
+                    "on-tertiary": "#4b2800",
+                    "error-container": "#93000a",
+                    "on-secondary-fixed-variant": "#00531c",
+                    "tertiary": "#ffb874",
+                    "primary-container": "#4b8eff",
+                    "surface-container-high": "#2a2a2a",
+                    "surface-container-highest": "#353534",
+                    "on-surface-variant": "#c1c6d7",
+                    "on-primary-fixed-variant": "#004493",
+                    "primary": "#adc6ff",
+                    "outline-variant": "#414755",
+                    "on-tertiary-fixed": "#2d1600",
+                    "tertiary-container": "#d47b00",
+                    "on-background": "#e5e2e1",
+                    "primary-fixed": "#d8e2ff",
+                    "on-primary-fixed": "#001a41",
+                    "tertiary-fixed-dim": "#ffb874",
+                    "secondary": "#53e16f",
+                    "on-secondary": "#003911",
+                    "surface": "#131313",
+                    "on-secondary-fixed": "#002107",
+                    "secondary-container": "#05b046",
+                    "secondary-fixed": "#72fe88",
+                    "background": "#131313",
+                    "surface-tint": "#adc6ff",
+                    "tertiary-fixed": "#ffdcbf",
+                    "surface-container": "#201f1f",
+                    "secondary-fixed-dim": "#53e16f",
+                    "surface-variant": "#353534",
+                    "inverse-surface": "#e5e2e1",
+                    "on-tertiary-container": "#412200",
+                    "surface-dim": "#131313",
+                    "surface-container-lowest": "#0e0e0e",
+                    "inverse-on-surface": "#313030",
+                    "on-error-container": "#ffdad6",
+                    "primary-fixed-dim": "#adc6ff",
+                    "on-surface": "#e5e2e1",
+                    "outline": "#8b90a0"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "lg": "24px",
+                    "gutter-mobile": "12px",
+                    "md": "16px",
+                    "margin-mobile": "16px",
+                    "xl": "32px",
+                    "base": "8px",
+                    "sm": "8px",
+                    "xs": "4px"
+            },
+            "fontFamily": {
+                    "headline-sm": ["Inter"],
+                    "label-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-lg": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "mono-data": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "label-md": ["11px", {"lineHeight": "14px", "fontWeight": "500"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "label-lg": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "mono-data": ["14px", {"lineHeight": "20px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .keyboard-area {
+            background: #1e1e1e;
+            border-top: 1px solid #2c2c2e;
+        }
+        .key-cap {
+            background: #2c2c2e;
+            box-shadow: 0 1px 0 rgba(0,0,0,0.4);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .glass-header {
+            background: rgba(19, 19, 19, 0.85);
+            backdrop-filter: blur(12px);
+        }
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2c2c2e;
+            border-radius: 10px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface overflow-hidden h-screen flex flex-col">
+<!-- Top Search Header -->
+<header class="w-full top-0 sticky z-50 glass-header border-b border-outline-variant flex items-center justify-between px-md h-16 gap-md">
+<div class="relative flex-grow">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]">search</span>
+</div>
+<input autofocus="" class="block w-full pl-10 pr-3 py-2 bg-surface-container-high border-none rounded-xl text-body-md text-on-surface placeholder-on-surface-variant focus:ring-1 focus:ring-primary transition-all" id="search-input" placeholder="Search trades, pairs, or tags..." type="text" value="BTC"/>
+</div>
+<button class="text-primary font-label-lg active:scale-95 transition-transform px-2">Cancel</button>
+</header>
+<!-- Content Canvas -->
+<main class="flex-grow overflow-y-auto pb-4 custom-scrollbar">
+<!-- Empty State (Hidden by default, shown via JS logic if no results) -->
+<div class="hidden flex flex-col items-center justify-center pt-24 px-xl text-center" id="empty-state">
+<div class="w-48 h-48 mb-lg opacity-40">
+<div class="w-full h-full bg-contain bg-center bg-no-repeat" data-alt="A minimalist 3D digital illustration of a stylized magnifying glass searching through empty floating glass geometric cubes. The scene is rendered in a high-end corporate dark mode aesthetic with deep charcoal backgrounds and soft primary blue glows. The lighting is moody and cinematic, emphasizing clean lines and mathematical precision consistent with a premium trading dashboard." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCubC1lmOT-KvuVF4dxNBsiQUnN-nCjCwgrt0udgbby_AEZAQYvsqAuFM7RoJfTyZdLqoJ7PAk4k-YCF-4uzuKv-bO4pI9AeZyVtTParHglVXmcs_LWya_pIgG9DC-csraTD_rz-CgxtaurUDUEWTh_-wFc9OQBHeg5trKgVwGRVBCyHEkqAt8Jyjb4gAp6_62y-mn7ObgKDr68RLs_hIpPtfWeTJAzNl7qsTZLxUORQ-7vBfbH2uoxbQ3W3sD9-j4zOEC9Qk8pQ3Y')"></div>
+</div>
+<h3 class="font-headline-sm text-headline-sm mb-xs">No Results Found</h3>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-[280px]">We couldn't find anything matching your search. Try a different term or asset.</p>
+</div>
+<!-- Search Results Section -->
+<div class="animate-in fade-in duration-500" id="results-container">
+<!-- Category: Trading Pairs -->
+<section class="mt-lg">
+<div class="px-md flex items-center justify-between mb-sm">
+<h2 class="font-label-lg text-label-lg uppercase tracking-wider text-on-surface-variant">Trading Pairs</h2>
+<span class="text-xs font-mono-data text-primary">3 found</span>
+</div>
+<div class="space-y-1">
+<div class="px-md py-3 flex items-center gap-md hover:bg-surface-container-high transition-colors cursor-pointer group">
+<div class="w-10 h-10 rounded-full flex items-center justify-center bg-primary-container/20 text-primary">
+<span class="material-symbols-outlined">currency_bitcoin</span>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-baseline">
+<span class="font-headline-sm text-headline-sm">BTC/USDT</span>
+<span class="font-mono-data text-secondary">+$1,420.00</span>
+</div>
+<div class="text-on-surface-variant text-label-md">Binance • 24h Vol $2.1B</div>
+</div>
+</div>
+<div class="px-md py-3 flex items-center gap-md hover:bg-surface-container-high transition-colors cursor-pointer">
+<div class="w-10 h-10 rounded-full flex items-center justify-center bg-surface-container-highest text-on-surface-variant">
+<span class="material-symbols-outlined">analytics</span>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-baseline">
+<span class="font-headline-sm text-headline-sm">WBTC/ETH</span>
+<span class="font-mono-data text-error">-$240.12</span>
+</div>
+<div class="text-on-surface-variant text-label-md">Uniswap V3 • 24h Vol $45M</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Category: Journal Entries -->
+<section class="mt-lg">
+<div class="px-md flex items-center justify-between mb-sm">
+<h2 class="font-label-lg text-label-lg uppercase tracking-wider text-on-surface-variant">Journal Entries</h2>
+</div>
+<div class="px-md">
+<div class="bg-surface-container rounded-xl p-md border border-outline-variant hover:border-primary transition-all cursor-pointer mb-sm">
+<div class="flex justify-between items-start mb-xs">
+<span class="font-headline-sm text-headline-sm text-primary">BTC Breakout Long</span>
+<span class="bg-secondary-container/20 text-secondary px-2 py-0.5 rounded text-[10px] font-bold uppercase">Closed</span>
+</div>
+<p class="text-body-md text-on-surface-variant line-clamp-2 mb-md">Entered near the 64k support level after a confirmed bounce on the 4H timeframe. Target hit at 68k...</p>
+<div class="flex items-center gap-md text-label-md text-on-surface-variant">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">calendar_today</span> Oct 12, 2023</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">trending_up</span> 4.2% Profit</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Category: Tags -->
+<section class="mt-lg">
+<div class="px-md flex items-center justify-between mb-sm">
+<h2 class="font-label-lg text-label-lg uppercase tracking-wider text-on-surface-variant">Tags</h2>
+</div>
+<div class="px-md flex flex-wrap gap-2">
+<div class="px-3 py-1.5 rounded-full bg-surface-container-highest border border-outline-variant flex items-center gap-2 hover:bg-primary-container transition-colors cursor-pointer group">
+<span class="material-symbols-outlined text-[16px] text-primary group-hover:text-on-primary-container">sell</span>
+<span class="font-label-lg text-label-lg">BTC-History</span>
+</div>
+<div class="px-3 py-1.5 rounded-full bg-surface-container-highest border border-outline-variant flex items-center gap-2 hover:bg-primary-container transition-colors cursor-pointer group">
+<span class="material-symbols-outlined text-[16px] text-primary group-hover:text-on-primary-container">sell</span>
+<span class="font-label-lg text-label-lg">Breakout-Strategy</span>
+</div>
+</div>
+</section>
+<!-- Recent Searches -->
+<section class="mt-xl mb-xl">
+<div class="px-md flex items-center justify-between mb-sm">
+<h2 class="font-label-lg text-label-lg uppercase tracking-wider text-on-surface-variant">Recent Searches</h2>
+<button class="text-xs text-on-surface-variant hover:text-primary">Clear all</button>
+</div>
+<div class="space-y-0.5">
+<div class="px-md py-3 flex items-center justify-between group cursor-pointer hover:bg-surface-container-low">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-on-surface-variant">history</span>
+<span class="font-body-md text-body-md">Ethereum Merge Trade</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[18px] opacity-0 group-hover:opacity-100 transition-opacity">close</span>
+</div>
+<div class="px-md py-3 flex items-center justify-between group cursor-pointer hover:bg-surface-container-low">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-on-surface-variant">history</span>
+<span class="font-body-md text-body-md">SOL Scalp</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[18px] opacity-0 group-hover:opacity-100 transition-opacity">close</span>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Simulated iOS-style Keyboard Overlay -->
+<div class="keyboard-area w-full animate-in slide-in-from-bottom duration-300">
+<!-- Accessory Bar -->
+<div class="h-10 flex items-center justify-between px-md bg-surface-container-highest border-b border-outline-variant/30">
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-on-surface-variant">chevron_left</span>
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</div>
+<button class="font-bold text-primary text-sm">Done</button>
+</div>
+<!-- Main Keyboard -->
+<div class="p-1.5 grid grid-cols-10 gap-1.5 pb-safe">
+<!-- Row 1 -->
+<div class="key-cap h-10 rounded-md flex items-center justify-center font-medium">Q</div>
+<div class="key-cap h-10 rounded-md flex items-center justify-center font-medium">W</div>
+<div class="key-cap h-10 rounded-md flex items-center justify-center font-medium">E</div>
+<div class="key-cap h-10 rounded-md flex items-center justify-center font-medium">R</div>
+<div class="key-cap h-10 rounded-md flex items-center justify-center font-medium">T</div>
+<div class="key-cap h-10 rounded-md flex items-center justify-center font-medium">Y</div>
+<div class="key-cap h-10 rounded-md flex items-center justify-center font-medium">U</div>
+<div class="key-cap h-10 rounded-md flex items-center justify-center font-medium">I</div>
+<div class="key-cap h-10 rounded-md flex items-center justify-center font-medium">O</div>
+<div class="key-cap h-10 rounded-md flex items-center justify-center font-medium">P</div>
+<!-- Row 2 (Indented) -->
+<div class="col-start-1 col-span-10 flex gap-1.5 px-3">
+<div class="key-cap flex-1 h-10 rounded-md flex items-center justify-center font-medium">A</div>
+<div class="key-cap flex-1 h-10 rounded-md flex items-center justify-center font-medium">S</div>
+<div class="key-cap flex-1 h-10 rounded-md flex items-center justify-center font-medium">D</div>
+<div class="key-cap flex-1 h-10 rounded-md flex items-center justify-center font-medium">F</div>
+<div class="key-cap flex-1 h-10 rounded-md flex items-center justify-center font-medium">G</div>
+<div class="key-cap flex-1 h-10 rounded-md flex items-center justify-center font-medium">H</div>
+<div class="key-cap flex-1 h-10 rounded-md flex items-center justify-center font-medium">J</div>
+<div class="key-cap flex-1 h-10 rounded-md flex items-center justify-center font-medium">K</div>
+<div class="key-cap flex-1 h-10 rounded-md flex items-center justify-center font-medium">L</div>
+</div>
+<!-- Row 3 -->
+<div class="key-cap col-span-1.5 bg-surface-container-highest h-10 rounded-md flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">shift</span>
+</div>
+<div class="key-cap h-10 rounded-md flex items-center justify-center font-medium">Z</div>
+<div class="key-cap h-10 rounded-md flex items-center justify-center font-medium">X</div>
+<div class="key-cap h-10 rounded-md flex items-center justify-center font-medium">C</div>
+<div class="key-cap h-10 rounded-md flex items-center justify-center font-medium">V</div>
+<div class="key-cap h-10 rounded-md flex items-center justify-center font-medium">B</div>
+<div class="key-cap h-10 rounded-md flex items-center justify-center font-medium">N</div>
+<div class="key-cap h-10 rounded-md flex items-center justify-center font-medium">M</div>
+<div class="key-cap col-span-1.5 bg-surface-container-highest h-10 rounded-md flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">backspace</span>
+</div>
+<!-- Row 4 -->
+<div class="key-cap col-span-2 bg-surface-container-highest h-10 rounded-md flex items-center justify-center text-xs">123</div>
+<div class="key-cap h-10 rounded-md flex items-center justify-center"><span class="material-symbols-outlined text-[18px]">emoji_emotions</span></div>
+<div class="key-cap col-span-4 h-10 rounded-md flex items-center justify-center text-xs opacity-60">space</div>
+<div class="key-cap col-span-3 bg-primary text-on-primary h-10 rounded-md flex items-center justify-center font-bold text-sm">Search</div>
+</div>
+<!-- Home Indicator Area Spacer -->
+<div class="h-8"></div>
+</div>
+<!-- Micro-interaction Script -->
+<script>
+        const searchInput = document.getElementById('search-input');
+        const emptyState = document.getElementById('empty-state');
+        const resultsContainer = document.getElementById('results-container');
+
+        searchInput.addEventListener('input', (e) => {
+            const value = e.target.value.trim().toLowerCase();
+            
+            // Logic to simulate "No results" when specific characters are typed for demo purposes
+            if (value === 'xyz' || value === 'null') {
+                resultsContainer.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+            } else {
+                resultsContainer.classList.remove('hidden');
+                emptyState.classList.add('hidden');
+            }
+        });
+
+        // Add haptic-like scale effect on key taps
+        document.querySelectorAll('.key-cap').forEach(key => {
+            key.addEventListener('touchstart', () => {
+                key.classList.add('scale-95', 'opacity-70');
+            });
+            key.addEventListener('touchend', () => {
+                key.classList.remove('scale-95', 'opacity-70');
+            });
+        });
+    </script>
+</body></html>

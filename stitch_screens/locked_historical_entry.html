@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Trading Journal - Historical Entry</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary-container": "#003a11",
+                    "on-primary-container": "#00285c",
+                    "inverse-primary": "#005bc1",
+                    "on-primary": "#002e69",
+                    "error": "#ffb4ab",
+                    "on-tertiary-fixed-variant": "#6a3b00",
+                    "surface-bright": "#393939",
+                    "surface-container-low": "#1c1b1b",
+                    "on-error": "#690005",
+                    "on-tertiary": "#4b2800",
+                    "error-container": "#93000a",
+                    "on-secondary-fixed-variant": "#00531c",
+                    "tertiary": "#ffb874",
+                    "primary-container": "#4b8eff",
+                    "surface-container-high": "#2a2a2a",
+                    "surface-container-highest": "#353534",
+                    "on-surface-variant": "#c1c6d7",
+                    "on-primary-fixed-variant": "#004493",
+                    "primary": "#adc6ff",
+                    "outline-variant": "#414755",
+                    "on-tertiary-fixed": "#2d1600",
+                    "tertiary-container": "#d47b00",
+                    "on-background": "#e5e2e1",
+                    "primary-fixed": "#d8e2ff",
+                    "on-primary-fixed": "#001a41",
+                    "tertiary-fixed-dim": "#ffb874",
+                    "secondary": "#53e16f",
+                    "on-secondary": "#003911",
+                    "surface": "#131313",
+                    "on-secondary-fixed": "#002107",
+                    "secondary-container": "#05b046",
+                    "secondary-fixed": "#72fe88",
+                    "background": "#131313",
+                    "surface-tint": "#adc6ff",
+                    "tertiary-fixed": "#ffdcbf",
+                    "surface-container": "#201f1f",
+                    "secondary-fixed-dim": "#53e16f",
+                    "surface-variant": "#353534",
+                    "inverse-surface": "#e5e2e1",
+                    "on-tertiary-container": "#412200",
+                    "surface-dim": "#131313",
+                    "surface-container-lowest": "#0e0e0e",
+                    "inverse-on-surface": "#313030",
+                    "on-error-container": "#ffdad6",
+                    "primary-fixed-dim": "#adc6ff",
+                    "on-surface": "#e5e2e1",
+                    "outline": "#8b90a0"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "lg": "24px",
+                    "gutter-mobile": "12px",
+                    "md": "16px",
+                    "margin-mobile": "16px",
+                    "xl": "32px",
+                    "base": "8px",
+                    "sm": "8px",
+                    "xs": "4px"
+            },
+            "fontFamily": {
+                    "headline-sm": ["Inter"],
+                    "label-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-lg": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "mono-data": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "label-md": ["11px", {"lineHeight": "14px", "fontWeight": "500"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "label-lg": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "mono-data": ["14px", {"lineHeight": "20px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            user-select: none;
+        }
+        .historical-blur {
+            backdrop-filter: blur(8px);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #131313;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #2C2C2E;
+            border-radius: 10px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body-md min-h-screen flex flex-col selection:bg-primary-container selection:text-on-primary-container">
+<!-- Top App Bar -->
+<header class="w-full top-0 sticky bg-background dark:bg-background border-b border-outline-variant dark:border-outline-variant z-40">
+<div class="flex items-center justify-between px-md h-14 w-full">
+<div class="flex items-center gap-md">
+<button class="active:scale-95 transition-transform text-on-surface">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="font-headline-sm text-headline-sm font-bold text-on-surface">Historical Entry</h1>
+</div>
+<div class="flex items-center gap-sm">
+<div class="flex items-center bg-surface-container-high px-3 py-1 rounded-full border border-outline-variant">
+<span class="material-symbols-outlined text-[16px] text-primary mr-1" style="font-variation-settings: 'FILL' 1;">lock</span>
+<span class="text-label-lg uppercase tracking-wider text-primary">Archived</span>
+</div>
+</div>
+</div>
+</header>
+<main class="flex-grow pb-32">
+<!-- Content Container -->
+<div class="max-w-4xl mx-auto px-margin-mobile mt-lg">
+<!-- Asset Header -->
+<div class="mb-xl">
+<div class="flex justify-between items-end mb-xs">
+<div>
+<p class="text-label-lg text-on-surface-variant mb-1">Oct 12, 2023 • 14:45 EST</p>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">BTC / USD</h2>
+</div>
+<div class="text-right">
+<span class="text-secondary font-mono-data text-headline-md">+$1,420.50</span>
+<p class="text-label-md text-on-surface-variant">+2.45% ROI</p>
+</div>
+</div>
+<div class="h-[1px] w-full bg-outline-variant"></div>
+</div>
+<!-- Bento Layout Content -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-md">
+<!-- Trade Specs (Left Column) -->
+<div class="space-y-md">
+<div class="bg-surface-container rounded-xl p-md border border-outline-variant">
+<p class="text-label-lg text-on-surface-variant mb-base">EXECUTION DETAILS</p>
+<div class="space-y-md">
+<div>
+<label class="text-label-md text-outline">Position</label>
+<p class="font-mono-data text-secondary uppercase">Long / 10x Lev</p>
+</div>
+<div>
+<label class="text-label-md text-outline">Entry Price</label>
+<p class="font-mono-data">$26,842.10</p>
+</div>
+<div>
+<label class="text-label-md text-outline">Exit Price</label>
+<p class="font-mono-data">$28,262.60</p>
+</div>
+<div>
+<label class="text-label-md text-outline">Total Size</label>
+<p class="font-mono-data">0.45 BTC</p>
+</div>
+</div>
+</div>
+<div class="bg-surface-container rounded-xl p-md border border-outline-variant">
+<p class="text-label-lg text-on-surface-variant mb-base">RISK PROFILE</p>
+<div class="flex items-center gap-md">
+<div class="flex-1">
+<label class="text-label-md text-outline">R:R Ratio</label>
+<p class="font-mono-data">1:3.4</p>
+</div>
+<div class="w-12 h-12 rounded-full border-4 border-secondary/30 flex items-center justify-center">
+<span class="text-label-md font-bold text-secondary">A+</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Analysis & Narrative (Main Column) -->
+<div class="md:col-span-2 space-y-md">
+<div class="bg-surface-container-low rounded-xl p-lg border border-outline-variant relative overflow-hidden">
+<!-- Locked Overlay Suggestion (Visual only) -->
+<div class="absolute top-0 right-0 p-md opacity-20 pointer-events-none">
+<span class="material-symbols-outlined text-6xl">edit_off</span>
+</div>
+<h3 class="text-headline-sm font-headline-sm mb-md flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary">description</span>
+                            Trade Thesis
+                        </h3>
+<div class="space-y-md text-on-surface-variant leading-relaxed">
+<p>
+                                Entered long following a successful retest of the $26.8k support level. Significant volume divergence observed on the 4H timeframe suggested exhaustive selling pressure.
+                            </p>
+<p>
+                                Macro context: Institutional buying signals identified via on-chain data flows. The 200 EMA served as dynamic support throughout the consolidation phase. 
+                            </p>
+<div class="bg-surface-container-highest/30 p-md rounded-lg border-l-4 border-primary italic">
+                                "The key here was patience. Watching for the liquidity sweep below the previous daily low before committing capital."
+                            </div>
+</div>
+<!-- Image Gallery -->
+<div class="mt-xl">
+<p class="text-label-lg text-on-surface-variant mb-md uppercase tracking-widest">Historical Evidence</p>
+<div class="grid grid-cols-2 gap-sm">
+<div class="aspect-video rounded-lg overflow-hidden border border-outline-variant group cursor-zoom-in">
+<div class="w-full h-full bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="A professional trading workstation screen showing a complex candlestick chart of Bitcoin on a dark mode interface. Multiple technical indicators like RSI, MACD, and volume profiles are visible against a deep charcoal background. The lighting is low and focused, emphasizing the mathematical precision of the financial data and the sleek minimalist aesthetics of high-end trading tools." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCrNuHEk8upNAb4yuVnsDJUXxktzc0hx8xmtyJQbb9deG51ST_H6l3GKj38ozEIBY08FQ-0rTkpyKtea7nNslFxWMIa7ul_DggykKaaF1-5DRumPLpGxBOWyvD_H0ZuoHJiu6geEdob_b--iQmyZ5zWDnFGtzkjVfJRS2EMrWtnRf5PJ5mKwmNYR9aJwaSGG1cHHXoH9rx-Pwkuh--pFEWDWLyu9yqfghZOXMPuzJ4-S0_wZvEBa-2GZkQt0bqYDPQmkKKLRD-ZMBY')">
+</div>
+</div>
+<div class="aspect-video rounded-lg overflow-hidden border border-outline-variant group cursor-zoom-in">
+<div class="w-full h-full bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="A detailed view of a 15-minute timeframe trading chart with Bitcoin price action breaking out of a bull flag pattern. The UI is modern and corporate with vibrant green and red candles contrasting against a pitch-black background. Fine grid lines and architectural drawing tools like Fibonacci retracements are precisely rendered in muted blues and purples, conveying a sense of disciplined technical analysis." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA6QuRrJpP53Li14i5-4VXy9GUaqWgN6RYLtBLmQmaMFgzqE4tqCJmNX2ZWHMiUPhN0pDdUY4-YGR43d8zem4TMun75xty6qi1EWQsusDRIs1Zc9oJ5-e9WKhSoFcgWX1MK5ACX2D2XdutluPYOl-QN5S8P80XjduicvLCXxMES467AgQUMKf4wNQuAu9gwvSKYLuXatHO67PniiHG33Epy4CxczhV1YEygDJlKPVCeWJxeyeauKrsemjAleYNX-MbOsK2WFtPMbEI')">
+</div>
+</div>
+</div>
+<div class="mt-sm aspect-[21/9] rounded-lg overflow-hidden border border-outline-variant group cursor-zoom-in">
+<div class="w-full h-full bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="A panoramic technical analysis chart showing the global crypto market capitalization and Bitcoin dominance over a three-month period. The visualization uses clean lines, minimal labels, and a sophisticated dark mode palette of #121212 and #1E1E1E. The mood is analytical and calm, capturing the essence of institutional-grade financial reporting and advanced data visualization." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDstI6BODT6lUa1hpaFtxQpwvEjWhFqx5CpkCujaKtf5ZpjIydfbKEEIa2aX4bhK90nHMQX-ZuUCxJyU7Vn76i17CJKx1g215IYJpW-bugC_HLnSw2YaGbYn3RmrnWI1tR4MK_PZbVIo2y3e60Tk33t4qBrsvD_sySbEKq2q3dwj-7neauYx9wGfhA_2Uf5buHUPW53Bm_53v-HJvatFMQbQT8xEUKVMiMIVQxjEvkBi892oBFW5FUpHRqn0xhvwi5MC8GPt5z_aF4')">
+</div>
+</div>
+</div>
+</div>
+<!-- Tags -->
+<div class="flex flex-wrap gap-sm">
+<span class="px-3 py-1 rounded-full bg-surface-container border border-outline-variant text-label-md text-on-surface-variant">#Breakout</span>
+<span class="px-3 py-1 rounded-full bg-surface-container border border-outline-variant text-label-md text-on-surface-variant">#4H_Timeframe</span>
+<span class="px-3 py-1 rounded-full bg-surface-container border border-outline-variant text-label-md text-on-surface-variant">#VolumeRetest</span>
+<span class="px-3 py-1 rounded-full bg-surface-container border border-outline-variant text-label-md text-on-surface-variant">#HighConfidence</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Fixed Footer Action -->
+<footer class="fixed bottom-0 left-0 w-full z-50 bg-surface/80 backdrop-blur-xl border-t border-outline-variant">
+<div class="max-w-4xl mx-auto px-margin-mobile h-[88px] flex items-center justify-between">
+<div class="hidden md:flex flex-col">
+<span class="text-label-md text-on-surface-variant">This entry is from your 2023 Archives</span>
+<span class="text-label-lg font-bold text-primary flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">info</span>
+                    Logic can be reused for current setups
+                </span>
+</div>
+<div class="flex items-center gap-md w-full md:w-auto">
+<button class="flex-1 md:flex-none px-xl h-12 rounded-full bg-surface border border-outline-variant text-on-surface font-bold hover:bg-surface-container-high transition-colors flex items-center justify-center gap-sm active:scale-95">
+<span class="material-symbols-outlined">share</span>
+                    Share
+                </button>
+<button class="flex-[2] md:flex-none px-xl h-12 rounded-full bg-primary text-on-primary font-bold hover:opacity-90 transition-all flex items-center justify-center gap-sm shadow-lg shadow-primary/20 active:scale-95" id="replyForwardBtn">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">forward_to_inbox</span>
+                    Reply Forward
+                </button>
+</div>
+</div>
+</footer>
+<!-- Interaction Block Overlay (Subtle UI Feedback) -->
+<div class="fixed top-20 left-1/2 -translate-x-1/2 z-[60] bg-surface-container-highest text-on-surface px-lg py-md rounded-xl border border-outline-variant shadow-2xl opacity-0 pointer-events-none transition-all duration-300 translate-y-4" id="toast">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-primary">lock</span>
+<span class="font-medium text-body-md">Historical records are read-only.</span>
+</div>
+</div>
+<script>
+        // Simulate "Read Only" interaction awareness
+        const interactiveElements = document.querySelectorAll('main p, main h2, main h3');
+        const toast = document.getElementById('toast');
+
+        interactiveElements.forEach(el => {
+            el.addEventListener('click', () => {
+                showToast();
+            });
+        });
+
+        function showToast() {
+            toast.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+            toast.classList.add('opacity-100', 'translate-y-0');
+            
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+                toast.classList.remove('opacity-100', 'translate-y-0');
+            }, 2500);
+        }
+
+        // Logic for "Reply Forward" action
+        const forwardBtn = document.getElementById('replyForwardBtn');
+        forwardBtn.addEventListener('click', () => {
+            forwardBtn.innerHTML = '<span class="material-symbols-outlined animate-spin">refresh</span> Processing...';
+            setTimeout(() => {
+                alert('Continuing trade logic in a new entry. Parameters successfully cloned to Drafts.');
+                forwardBtn.innerHTML = '<span class="material-symbols-outlined" style="font-variation-settings: \'FILL\' 1;">forward_to_inbox</span> Reply Forward';
+            }, 800);
+        });
+
+        // Micro-interaction for gallery hover
+        const images = document.querySelectorAll('.group');
+        images.forEach(img => {
+            img.addEventListener('mouseenter', () => {
+                img.style.borderColor = 'var(--primary)';
+            });
+            img.addEventListener('mouseleave', () => {
+                img.style.borderColor = '';
+            });
+        });
+    </script>
+</body></html>

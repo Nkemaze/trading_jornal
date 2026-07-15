@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../models/journal_entry.dart';
+import '../models/trading_pair.dart';
+import '../providers/pair_provider.dart';
+import '../providers/journal_provider.dart';
 import '../theme/app_colors.dart';
+import 'pair_detail_timeline_screen.dart';
 
 class SearchExperienceScreen extends StatefulWidget {
   const SearchExperienceScreen({super.key});
@@ -11,13 +17,7 @@ class SearchExperienceScreen extends StatefulWidget {
 class _SearchExperienceScreenState extends State<SearchExperienceScreen> {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
-  String _query = 'BTC';
-
-  @override
-  void initState() {
-    super.initState();
-    _searchController.text = _query;
-  }
+  String _query = '';
 
   @override
   void dispose() {
@@ -72,16 +72,15 @@ class _SearchExperienceScreenState extends State<SearchExperienceScreen> {
                       child: TextField(
                         controller: _searchController,
                         focusNode: _searchFocusNode,
+                        autofocus: true,
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w400,
                           color: AppColors.onSurface,
                         ),
                         decoration: const InputDecoration(
-                          hintText: 'Search trades, pairs, or tags...',
-                          hintStyle: TextStyle(
-                            color: AppColors.onSurfaceVariant,
-                          ),
+                          hintText: 'Search pairs or entries...',
+                          hintStyle: TextStyle(color: AppColors.onSurfaceVariant),
                           border: InputBorder.none,
                           enabledBorder: InputBorder.none,
                           focusedBorder: InputBorder.none,
@@ -93,6 +92,18 @@ class _SearchExperienceScreenState extends State<SearchExperienceScreen> {
                         },
                       ),
                     ),
+                    if (_query.isNotEmpty)
+                      GestureDetector(
+                        onTap: () {
+                          _searchController.clear();
+                          setState(() => _query = '');
+                        },
+                        child: const Icon(
+                          Icons.close,
+                          color: AppColors.onSurfaceVariant,
+                          size: 18,
+                        ),
+                      ),
                   ],
                 ),
               ),
@@ -132,14 +143,14 @@ class _SearchExperienceScreenState extends State<SearchExperienceScreen> {
                 borderRadius: BorderRadius.circular(16),
               ),
               child: const Icon(
-                Icons.search_off,
+                Icons.search,
                 size: 64,
                 color: AppColors.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: 24),
             const Text(
-              'No Results Found',
+              'Search Your Journal',
               style: TextStyle(
                 fontSize: 20,
                 height: 1.4,
@@ -150,7 +161,7 @@ class _SearchExperienceScreenState extends State<SearchExperienceScreen> {
             ),
             const SizedBox(height: 8),
             const Text(
-              "We couldn't find anything matching your search. Try a different term or asset.",
+              'Type to search across your trading pairs and journal entries.',
               style: TextStyle(
                 fontSize: 14,
                 height: 1.43,
@@ -166,18 +177,100 @@ class _SearchExperienceScreenState extends State<SearchExperienceScreen> {
   }
 
   Widget _buildResults() {
+    final pairProvider = context.watch<PairProvider>();
+    final journalProvider = context.watch<JournalProvider>();
+    final q = _query.toLowerCase();
+
+    final matchedPairs = pairProvider.pairs
+        .where((p) => p.symbol.toLowerCase().contains(q))
+        .toList();
+
+    final allEntries = journalProvider.entries;
+    final matchedEntries = allEntries
+        .where((e) =>
+            e.content.toLowerCase().contains(q) ||
+            (e.title?.toLowerCase().contains(q) ?? false) ||
+            e.tags.any((t) => t.toLowerCase().contains(q)))
+        .toList();
+
+    final matchedTags = <String>{};
+    for (final entry in allEntries) {
+      for (final tag in entry.tags) {
+        if (tag.toLowerCase().contains(q)) {
+          matchedTags.add(tag);
+        }
+      }
+    }
+
+    final hasResults =
+        matchedPairs.isNotEmpty || matchedEntries.isNotEmpty || matchedTags.isNotEmpty;
+
+    if (!hasResults) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.search_off, size: 48, color: AppColors.onSurfaceVariant),
+            const SizedBox(height: 16),
+            const Text(
+              'No Results Found',
+              style: TextStyle(
+                fontSize: 20,
+                height: 1.4,
+                fontWeight: FontWeight.w600,
+                color: AppColors.onSurface,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'No matches for "$_query"',
+              style: const TextStyle(
+                fontSize: 14,
+                height: 1.43,
+                fontWeight: FontWeight.w400,
+                color: AppColors.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     return SingleChildScrollView(
       padding: const EdgeInsets.only(bottom: 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildTradingPairsSection(),
-          const SizedBox(height: 24),
-          _buildJournalEntriesSection(),
-          const SizedBox(height: 24),
-          _buildTagsSection(),
-          const SizedBox(height: 24),
-          _buildRecentSearchesSection(),
+          if (matchedPairs.isNotEmpty) ...[
+            _buildSectionHeader(
+              title: 'TRADING PAIRS',
+              trailing: '${matchedPairs.length} found',
+            ),
+            const SizedBox(height: 12),
+            ...matchedPairs.map((pair) => _buildPairResult(pair)),
+          ],
+          if (matchedEntries.isNotEmpty) ...[
+            const SizedBox(height: 24),
+            _buildSectionHeader(
+              title: 'JOURNAL ENTRIES',
+              trailing: '${matchedEntries.length} found',
+            ),
+            const SizedBox(height: 12),
+            ...matchedEntries.map((entry) => _buildEntryResult(entry)),
+          ],
+          if (matchedTags.isNotEmpty) ...[
+            const SizedBox(height: 24),
+            _buildSectionHeader(title: 'TAGS'),
+            const SizedBox(height: 12),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: matchedTags.map((tag) => _buildTagChip(tag)).toList(),
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -186,7 +279,6 @@ class _SearchExperienceScreenState extends State<SearchExperienceScreen> {
   Widget _buildSectionHeader({
     required String title,
     String? trailing,
-    VoidCallback? onTrailingTap,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -204,15 +296,12 @@ class _SearchExperienceScreenState extends State<SearchExperienceScreen> {
             ),
           ),
           if (trailing != null)
-            GestureDetector(
-              onTap: onTrailingTap,
-              child: Text(
-                trailing,
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.primary,
-                ),
+            Text(
+              trailing,
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                color: AppColors.primary,
               ),
             ),
         ],
@@ -220,43 +309,14 @@ class _SearchExperienceScreenState extends State<SearchExperienceScreen> {
     );
   }
 
-  Widget _buildTradingPairsSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildSectionHeader(
-          title: 'TRADING PAIRS',
-          trailing: '3 found',
-        ),
-        const SizedBox(height: 12),
-        _buildPairResult(
-          symbol: 'BTC/USDT',
-          pnl: '+\$1,420.00',
-          isPositive: true,
-          exchange: 'Binance',
-          volume: '24h Vol \$2.1B',
-        ),
-        _buildPairResult(
-          symbol: 'WBTC/ETH',
-          pnl: '-\$240.12',
-          isPositive: false,
-          exchange: 'Uniswap V3',
-          volume: '24h Vol \$45M',
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPairResult({
-    required String symbol,
-    required String pnl,
-    required bool isPositive,
-    required String exchange,
-    required String volume,
-  }) {
+  Widget _buildPairResult(TradingPair pair) {
     return GestureDetector(
       onTap: () {
-        // TODO: Navigate to pair detail
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (_) => PairDetailTimelineScreen(pairSymbol: pair.symbol),
+          ),
+        );
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -267,13 +327,11 @@ class _SearchExperienceScreenState extends State<SearchExperienceScreen> {
               height: 40,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: isPositive
-                    ? AppColors.primaryContainer.withAlpha(50)
-                    : AppColors.surfaceContainerHighest,
+                color: AppColors.primaryContainer.withAlpha(50),
               ),
-              child: Icon(
-                isPositive ? Icons.currency_bitcoin : Icons.analytics,
-                color: isPositive ? AppColors.primary : AppColors.onSurfaceVariant,
+              child: const Icon(
+                Icons.currency_bitcoin,
+                color: AppColors.primary,
                 size: 20,
               ),
             ),
@@ -282,33 +340,18 @@ class _SearchExperienceScreenState extends State<SearchExperienceScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        symbol,
-                        style: const TextStyle(
-                          fontSize: 20,
-                          height: 1.4,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.onSurface,
-                        ),
-                      ),
-                      Text(
-                        pnl,
-                        style: TextStyle(
-                          fontSize: 14,
-                          height: 1.43,
-                          letterSpacing: -0.01,
-                          fontWeight: FontWeight.w600,
-                          color: isPositive ? AppColors.secondary : AppColors.error,
-                        ),
-                      ),
-                    ],
+                  Text(
+                    pair.symbol,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      height: 1.4,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.onSurface,
+                    ),
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    '$exchange \u2022 $volume',
+                    '${pair.journalCount} journal entries',
                     style: const TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w500,
@@ -318,131 +361,130 @@ class _SearchExperienceScreenState extends State<SearchExperienceScreen> {
                 ],
               ),
             ),
+            const Icon(
+              Icons.chevron_right,
+              color: AppColors.onSurfaceVariant,
+              size: 20,
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildJournalEntriesSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildSectionHeader(title: 'JOURNAL ENTRIES'),
-        const SizedBox(height: 12),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: AppColors.surfaceContainer,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.outlineVariant),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildEntryResult(JournalEntry entry) {
+    final date = entry.date;
+    final months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ];
+    final dateStr = '${months[date.month - 1]} ${date.day}, ${date.year}';
+
+    Color statusColor;
+    String statusLabel;
+    switch (entry.status) {
+      case EntryStatus.profitable:
+        statusColor = AppColors.secondary;
+        statusLabel = 'PROFITABLE';
+        break;
+      case EntryStatus.stopped:
+        statusColor = AppColors.error;
+        statusLabel = 'STOPPED';
+        break;
+      case EntryStatus.draft:
+        statusColor = AppColors.primary;
+        statusLabel = 'DRAFT';
+        break;
+      case EntryStatus.neutral:
+        statusColor = AppColors.onSurfaceVariant;
+        statusLabel = '';
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppColors.surfaceContainer,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColors.outlineVariant),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'BTC Breakout Long',
-                      style: TextStyle(
-                        fontSize: 20,
-                        height: 1.4,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.primary,
-                      ),
+                Expanded(
+                  child: Text(
+                    entry.title ?? entry.pairSymbol,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      height: 1.4,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.onSurface,
                     ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: AppColors.secondaryContainer.withAlpha(50),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: const Text(
-                        'CLOSED',
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.secondary,
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-                const SizedBox(height: 8),
-                const Text(
-                  'Entered near the 64k support level after a confirmed bounce on the 4H timeframe. Target hit at 68k...',
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 14,
-                    height: 1.43,
-                    fontWeight: FontWeight.w400,
+                if (statusLabel.isNotEmpty)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: statusColor.withAlpha(25),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      statusLabel,
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        color: statusColor,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              entry.content,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 14,
+                height: 1.43,
+                fontWeight: FontWeight.w400,
+                color: AppColors.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                const Icon(Icons.calendar_today, size: 12, color: AppColors.onSurfaceVariant),
+                const SizedBox(width: 4),
+                Text(
+                  dateStr,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
                     color: AppColors.onSurfaceVariant,
                   ),
                 ),
-                const SizedBox(height: 12),
-                const Row(
-                  children: [
-                    Icon(
-                      Icons.calendar_today,
-                      size: 14,
-                      color: AppColors.onSurfaceVariant,
-                    ),
-                    SizedBox(width: 4),
-                    Text(
-                      'Oct 12, 2023',
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.onSurfaceVariant,
-                      ),
-                    ),
-                    SizedBox(width: 16),
-                    Icon(
-                      Icons.trending_up,
-                      size: 14,
-                      color: AppColors.onSurfaceVariant,
-                    ),
-                    SizedBox(width: 4),
-                    Text(
-                      '4.2% Profit',
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
+                const SizedBox(width: 8),
+                const Icon(Icons.label, size: 12, color: AppColors.onSurfaceVariant),
+                const SizedBox(width: 4),
+                Text(
+                  entry.pairSymbol,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.onSurfaceVariant,
+                  ),
                 ),
               ],
             ),
-          ),
+          ],
         ),
-      ],
-    );
-  }
-
-  Widget _buildTagsSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildSectionHeader(title: 'TAGS'),
-        const SizedBox(height: 12),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              _buildTagChip('BTC-History'),
-              _buildTagChip('Breakout-Strategy'),
-            ],
-          ),
-        ),
-      ],
+      ),
     );
   }
 
@@ -457,11 +499,7 @@ class _SearchExperienceScreenState extends State<SearchExperienceScreen> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(
-            Icons.sell,
-            size: 14,
-            color: AppColors.primary,
-          ),
+          const Icon(Icons.sell, size: 14, color: AppColors.primary),
           const SizedBox(width: 8),
           Text(
             tag,
@@ -474,60 +512,6 @@ class _SearchExperienceScreenState extends State<SearchExperienceScreen> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildRecentSearchesSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildSectionHeader(
-          title: 'RECENT SEARCHES',
-          trailing: 'Clear all',
-          onTrailingTap: () {},
-        ),
-        const SizedBox(height: 12),
-        _buildRecentSearchItem('Ethereum Merge Trade'),
-        _buildRecentSearchItem('SOL Scalp'),
-      ],
-    );
-  }
-
-  Widget _buildRecentSearchItem(String query) {
-    return GestureDetector(
-      onTap: () {
-        _searchController.text = query;
-        setState(() => _query = query);
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Row(
-          children: [
-            const Icon(
-              Icons.history,
-              color: AppColors.onSurfaceVariant,
-              size: 20,
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Text(
-                query,
-                style: const TextStyle(
-                  fontSize: 14,
-                  height: 1.43,
-                  fontWeight: FontWeight.w400,
-                  color: AppColors.onSurface,
-                ),
-              ),
-            ),
-            const Icon(
-              Icons.close,
-              size: 18,
-              color: AppColors.onSurfaceVariant,
-            ),
-          ],
-        ),
       ),
     );
   }

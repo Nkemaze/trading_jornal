@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../models/alert_item.dart';
+import '../models/reminder.dart';
 import '../providers/navigation_provider.dart';
+import '../providers/reminder_provider.dart';
 import '../theme/app_colors.dart';
 import 'add_alert_screen.dart';
 
@@ -13,12 +14,9 @@ class AlertsManagementScreen extends StatefulWidget {
 }
 
 class _AlertsManagementScreenState extends State<AlertsManagementScreen> {
-  late List<AlertItem> _alerts;
-
   @override
   void initState() {
     super.initState();
-    _alerts = List.from(AlertItem.sampleData);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<NavigationProvider>().setBottomNavIndex(2);
     });
@@ -53,7 +51,7 @@ class _AlertsManagementScreenState extends State<AlertsManagementScreen> {
             ),
             const SizedBox(width: 16),
             const Text(
-              'Alerts',
+              'Reminders',
               style: TextStyle(
                 fontSize: 20,
                 height: 1.4,
@@ -74,104 +72,120 @@ class _AlertsManagementScreenState extends State<AlertsManagementScreen> {
   }
 
   Widget _buildContent() {
+    final reminderProvider = context.watch<ReminderProvider>();
+    final reminders = reminderProvider.reminders;
+    final activeReminders = reminders.where((r) => r.isActive).toList();
+
     return Stack(
       children: [
-        SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(16, 24, 16, 120),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildPriceAlertsSection(),
-              const SizedBox(height: 24),
-              _buildRemindersSection(),
-            ],
+        if (reminders.isEmpty)
+          _buildEmptyState()
+        else
+          SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(16, 24, 16, 120),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'All Reminders',
+                      style: TextStyle(
+                        fontSize: 20,
+                        height: 1.4,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.onSurface,
+                      ),
+                    ),
+                    Text(
+                      '${activeReminders.length} ACTIVE',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        height: 1.33,
+                        letterSpacing: 0.05,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                ...reminders.map((reminder) => _buildReminderCard(reminder)),
+              ],
+            ),
           ),
-        ),
         _buildFab(),
       ],
     );
   }
 
-  Widget _buildPriceAlertsSection() {
-    final priceAlerts = _alerts.where((a) => a.type == AlertType.priceAlert).toList();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              'Price Alerts',
-              style: TextStyle(
-                fontSize: 20,
-                height: 1.4,
-                fontWeight: FontWeight.w600,
-                color: AppColors.onSurface,
-              ),
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: AppColors.primary.withAlpha(25),
             ),
-            Text(
-              'ACTIVE (${priceAlerts.where((a) => a.isActive).length})',
-              style: const TextStyle(
-                fontSize: 12,
-                height: 1.33,
-                letterSpacing: 0.05,
-                fontWeight: FontWeight.w600,
-                color: AppColors.primary,
-              ),
+            child: const Icon(
+              Icons.notifications_none,
+              size: 40,
+              color: AppColors.primary,
             ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        ...priceAlerts.map((alert) => _buildAlertCard(alert)),
-      ],
+          ),
+          const SizedBox(height: 24),
+          const Text(
+            'No reminders yet',
+            style: TextStyle(
+              fontSize: 20,
+              height: 1.4,
+              fontWeight: FontWeight.w600,
+              color: AppColors.onSurface,
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'Tap the button below to create your first reminder.',
+            style: TextStyle(
+              fontSize: 14,
+              height: 1.43,
+              fontWeight: FontWeight.w400,
+              color: AppColors.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _buildRemindersSection() {
-    final reminders = _alerts.where((a) => a.type == AlertType.reminder).toList();
+  Widget _buildReminderCard(Reminder reminder) {
+    final now = DateTime.now();
+    final diff = reminder.remindAt.difference(now);
+    String timeText;
+    if (diff.isNegative) {
+      timeText = 'Past due';
+    } else if (diff.inMinutes < 60) {
+      timeText = 'In ${diff.inMinutes}m';
+    } else if (diff.inHours < 24) {
+      timeText = 'In ${diff.inHours}h';
+    } else {
+      timeText = 'In ${diff.inDays}d';
+    }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              'Reminders',
-              style: TextStyle(
-                fontSize: 20,
-                height: 1.4,
-                fontWeight: FontWeight.w600,
-                color: AppColors.onSurface,
-              ),
-            ),
-            Text(
-              'RECURRING',
-              style: TextStyle(
-                fontSize: 12,
-                height: 1.33,
-                letterSpacing: 0.05,
-                fontWeight: FontWeight.w600,
-                color: AppColors.onSurfaceVariant.withAlpha(200),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        ...reminders.map((alert) => _buildReminderCard(alert)),
-      ],
-    );
-  }
-
-  Widget _buildAlertCard(AlertItem alert) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surfaceContainerHigh.withAlpha(150),
+        color: AppColors.surfaceContainerHigh.withAlpha(reminder.isActive ? 150 : 75),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.outlineVariant),
+        border: Border.all(
+          color: reminder.isActive ? AppColors.outlineVariant : AppColors.outlineVariant.withAlpha(100),
+        ),
       ),
       child: Row(
         children: [
@@ -180,11 +194,11 @@ class _AlertsManagementScreenState extends State<AlertsManagementScreen> {
             height: 48,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: AppColors.primary.withAlpha(25),
+              color: AppColors.secondary.withAlpha(reminder.isActive ? 25 : 10),
             ),
-            child: const Icon(
-              Icons.trending_up,
-              color: AppColors.primary,
+            child: Icon(
+              Icons.update,
+              color: reminder.isActive ? AppColors.secondary : AppColors.onSurfaceVariant,
               size: 24,
             ),
           ),
@@ -194,17 +208,17 @@ class _AlertsManagementScreenState extends State<AlertsManagementScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  alert.title,
-                  style: const TextStyle(
+                  reminder.title,
+                  style: TextStyle(
                     fontSize: 16,
                     height: 1.5,
                     fontWeight: FontWeight.w400,
-                    color: AppColors.onSurface,
+                    color: reminder.isActive ? AppColors.onSurface : AppColors.onSurfaceVariant,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  alert.subtitle,
+                  timeText,
                   style: const TextStyle(
                     fontSize: 12,
                     height: 1.33,
@@ -217,77 +231,10 @@ class _AlertsManagementScreenState extends State<AlertsManagementScreen> {
             ),
           ),
           _buildToggle(
-            value: alert.isActive,
-            onChanged: (value) {
-              setState(() {
-                final index = _alerts.indexWhere((a) => a.id == alert.id);
-                if (index != -1) {
-                  _alerts[index] = _alerts[index].copyWith(isActive: value);
-                }
-              });
+            value: reminder.isActive,
+            onChanged: () {
+              context.read<ReminderProvider>().toggleReminder(reminder.id);
             },
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildReminderCard(AlertItem alert) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceContainerHigh.withAlpha(150),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.outlineVariant),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: AppColors.secondary.withAlpha(25),
-            ),
-            child: const Icon(
-              Icons.update,
-              color: AppColors.secondary,
-              size: 24,
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  alert.title,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    height: 1.5,
-                    fontWeight: FontWeight.w400,
-                    color: AppColors.onSurface,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  alert.subtitle,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    height: 1.33,
-                    letterSpacing: 0.05,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const Icon(
-            Icons.more_vert,
-            color: AppColors.onSurfaceVariant,
-            size: 24,
           ),
         ],
       ),
@@ -296,10 +243,10 @@ class _AlertsManagementScreenState extends State<AlertsManagementScreen> {
 
   Widget _buildToggle({
     required bool value,
-    required ValueChanged<bool> onChanged,
+    required VoidCallback onChanged,
   }) {
     return GestureDetector(
-      onTap: () => onChanged(!value),
+      onTap: onChanged,
       child: Container(
         width: 44,
         height: 24,

@@ -3,19 +3,19 @@ import '../models/journal_entry.dart';
 import '../theme/app_colors.dart';
 
 class LockedHistoricalEntryScreen extends StatelessWidget {
-  const LockedHistoricalEntryScreen({super.key});
+  final JournalEntry entry;
+
+  const LockedHistoricalEntryScreen({super.key, required this.entry});
 
   @override
   Widget build(BuildContext context) {
-    final trade = HistoricalTrade.sampleData;
-
     return Scaffold(
       backgroundColor: AppColors.background,
       body: Column(
         children: [
           _buildTopBar(context),
           Expanded(
-            child: _buildContent(trade),
+            child: _buildContent(),
           ),
         ],
       ),
@@ -87,23 +87,53 @@ class LockedHistoricalEntryScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildContent(HistoricalTrade trade) {
+  Widget _buildContent() {
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(16, 24, 16, 120),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildAssetHeader(trade),
+          _buildAssetHeader(),
           const SizedBox(height: 24),
-          _buildBentoLayout(trade),
+          _buildEntryBody(),
           const SizedBox(height: 16),
-          _buildTags(trade),
+          if (entry.tags.isNotEmpty) _buildTags(),
         ],
       ),
     );
   }
 
-  Widget _buildAssetHeader(HistoricalTrade trade) {
+  Widget _buildAssetHeader() {
+    final date = entry.date;
+    final months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ];
+    final hour = date.hour > 12 ? date.hour - 12 : date.hour == 0 ? 12 : date.hour;
+    final minute = date.minute.toString().padLeft(2, '0');
+    final ampm = date.hour >= 12 ? 'PM' : 'AM';
+    final dateStr = '${months[date.month - 1]} ${date.day}, ${date.year} \u2022 $hour:$minute $ampm';
+
+    Color statusColor;
+    String statusLabel;
+    switch (entry.status) {
+      case EntryStatus.profitable:
+        statusColor = AppColors.secondary;
+        statusLabel = 'PROFITABLE';
+        break;
+      case EntryStatus.stopped:
+        statusColor = AppColors.error;
+        statusLabel = 'STOPPED';
+        break;
+      case EntryStatus.draft:
+        statusColor = AppColors.primary;
+        statusLabel = 'DRAFT';
+        break;
+      case EntryStatus.neutral:
+        statusColor = AppColors.onSurfaceVariant;
+        statusLabel = '';
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -115,7 +145,7 @@ class LockedHistoricalEntryScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Oct 12, 2023 \u2022 14:45 EST',
+                  dateStr,
                   style: TextStyle(
                     fontSize: 12,
                     height: 1.33,
@@ -125,9 +155,9 @@ class LockedHistoricalEntryScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 4),
-                const Text(
-                  'BTC / USD',
-                  style: TextStyle(
+                Text(
+                  entry.title ?? entry.pairSymbol,
+                  style: const TextStyle(
                     fontSize: 32,
                     height: 1.25,
                     letterSpacing: -0.02,
@@ -137,29 +167,27 @@ class LockedHistoricalEntryScreen extends StatelessWidget {
                 ),
               ],
             ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  trade.pnl,
-                  style: const TextStyle(
-                    fontSize: 24,
-                    height: 1.33,
-                    letterSpacing: -0.01,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.secondary,
+            if (statusLabel.isNotEmpty)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: statusColor.withAlpha(25),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      statusLabel,
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        color: statusColor,
+                      ),
+                    ),
                   ),
-                ),
-                Text(
-                  trade.roi,
-                  style: const TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ),
+                ],
+              ),
           ],
         ),
         const SizedBox(height: 16),
@@ -172,174 +200,9 @@ class LockedHistoricalEntryScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildBentoLayout(HistoricalTrade trade) {
-    return Column(
-      children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              flex: 1,
-              child: Column(
-                children: [
-                  _buildExecutionDetails(trade),
-                  const SizedBox(height: 12),
-                  _buildRiskProfile(trade),
-                ],
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              flex: 2,
-              child: _buildTradeThesis(trade),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildExecutionDetails(HistoricalTrade trade) {
+  Widget _buildEntryBody() {
     return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceContainer,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.outlineVariant),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'EXECUTION DETAILS',
-            style: TextStyle(
-              fontSize: 12,
-              height: 1.33,
-              letterSpacing: 0.05,
-              fontWeight: FontWeight.w600,
-              color: AppColors.onSurfaceVariant,
-            ),
-          ),
-          const SizedBox(height: 12),
-          _buildDetailField('Position', trade.position, isHighlighted: true),
-          const SizedBox(height: 12),
-          _buildDetailField('Entry Price', trade.entryPrice),
-          const SizedBox(height: 12),
-          _buildDetailField('Exit Price', trade.exitPrice),
-          const SizedBox(height: 12),
-          _buildDetailField('Total Size', trade.totalSize),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDetailField(String label, String value, {bool isHighlighted = false}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label.toUpperCase(),
-          style: const TextStyle(
-            fontSize: 11,
-            fontWeight: FontWeight.w500,
-            color: AppColors.outline,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 14,
-            height: 1.43,
-            letterSpacing: -0.01,
-            fontWeight: FontWeight.w600,
-            color: isHighlighted ? AppColors.secondary : AppColors.onSurface,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildRiskProfile(HistoricalTrade trade) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceContainer,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.outlineVariant),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'RISK PROFILE',
-            style: TextStyle(
-              fontSize: 12,
-              height: 1.33,
-              letterSpacing: 0.05,
-              fontWeight: FontWeight.w600,
-              color: AppColors.onSurfaceVariant,
-            ),
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'R:R RATIO',
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.outline,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      trade.rrRatio,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        height: 1.43,
-                        letterSpacing: -0.01,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.onSurface,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: AppColors.secondary.withAlpha(76),
-                    width: 4,
-                  ),
-                ),
-                child: const Center(
-                  child: Text(
-                    'A+',
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.secondary,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTradeThesis(HistoricalTrade trade) {
-    return Container(
+      width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: AppColors.surfaceContainerLow,
@@ -357,9 +220,9 @@ class LockedHistoricalEntryScreen extends StatelessWidget {
                 size: 20,
               ),
               const SizedBox(width: 8),
-              const Text(
-                'Trade Thesis',
-                style: TextStyle(
+              Text(
+                entry.title ?? 'Journal Entry',
+                style: const TextStyle(
                   fontSize: 20,
                   height: 1.4,
                   fontWeight: FontWeight.w600,
@@ -369,112 +232,68 @@ class LockedHistoricalEntryScreen extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          ...trade.thesis.split('\n\n').map((paragraph) {
-            if (paragraph.startsWith('"')) {
-              return Container(
-                margin: const EdgeInsets.only(bottom: 16),
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: AppColors.surfaceContainerHighest.withAlpha(76),
-                  borderRadius: BorderRadius.circular(8),
-                  border: const Border(
-                    left: BorderSide(
-                      color: AppColors.primary,
-                      width: 4,
-                    ),
-                  ),
-                ),
-                child: Text(
-                  paragraph,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    height: 1.43,
-                    fontWeight: FontWeight.w400,
-                    color: AppColors.onSurfaceVariant,
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
-              );
-            }
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 16),
-              child: Text(
-                paragraph,
-                style: const TextStyle(
-                  fontSize: 14,
-                  height: 1.43,
-                  fontWeight: FontWeight.w400,
-                  color: AppColors.onSurfaceVariant,
-                ),
-              ),
-            );
-          }),
-          const SizedBox(height: 16),
-          const Text(
-            'HISTORICAL EVIDENCE',
-            style: TextStyle(
-              fontSize: 12,
-              height: 1.33,
-              letterSpacing: 0.05,
-              fontWeight: FontWeight.w600,
+          Text(
+            entry.content,
+            style: const TextStyle(
+              fontSize: 14,
+              height: 1.43,
+              fontWeight: FontWeight.w400,
               color: AppColors.onSurfaceVariant,
             ),
           ),
-          const SizedBox(height: 12),
-          _buildImageGallery(),
+          if (entry.attachmentUrls.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            const Text(
+              'ATTACHMENTS',
+              style: TextStyle(
+                fontSize: 12,
+                height: 1.33,
+                letterSpacing: 0.05,
+                fontWeight: FontWeight.w600,
+                color: AppColors.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: 12),
+            _buildImageGallery(),
+          ],
         ],
       ),
     );
   }
 
   Widget _buildImageGallery() {
-    return Column(
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: _buildGalleryThumbnail(120),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: _buildGalleryThumbnail(120),
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        _buildGalleryThumbnail(80),
-      ],
-    );
-  }
-
-  Widget _buildGalleryThumbnail(double height) {
-    return GestureDetector(
-      onTap: () {
-        // TODO: Navigate to image gallery
-      },
-      child: Container(
-        height: height,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: AppColors.outlineVariant),
-          color: AppColors.surfaceContainerHighest,
-        ),
-        child: const Center(
-          child: Icon(
-            Icons.image,
-            size: 32,
-            color: AppColors.outline,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTags(HistoricalTrade trade) {
     return Wrap(
       spacing: 8,
       runSpacing: 8,
-      children: trade.tags.map((tag) {
+      children: entry.attachmentUrls.map((url) {
+        return GestureDetector(
+          onTap: () {},
+          child: Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: AppColors.outlineVariant),
+              color: AppColors.surfaceContainerHighest,
+            ),
+            child: const Center(
+              child: Icon(
+                Icons.image,
+                size: 24,
+                color: AppColors.outline,
+              ),
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildTags() {
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: entry.tags.map((tag) {
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(

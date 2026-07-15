@@ -1,18 +1,20 @@
+import 'package:hive/hive.dart';
+
 enum EntryStatus { draft, profitable, stopped, neutral }
 
-class JournalEntry {
-  final String id;
-  final String pairSymbol;
-  final DateTime date;
-  final String? title;
-  final String content;
-  final EntryStatus status;
-  final bool isLocked;
-  final List<String> tags;
-  final List<String> attachmentUrls;
-  final String? parentId;
+class JournalEntry extends HiveObject {
+  late String id;
+  late String pairSymbol;
+  late DateTime date;
+  String? title;
+  late String content;
+  late EntryStatus status;
+  late bool isLocked;
+  late List<String> tags;
+  late List<String> attachmentUrls;
+  String? parentId;
 
-  const JournalEntry({
+  JournalEntry({
     required this.id,
     required this.pairSymbol,
     required this.date,
@@ -24,65 +26,57 @@ class JournalEntry {
     this.attachmentUrls = const [],
     this.parentId,
   });
+}
 
-  static final sampleData = [
-    JournalEntry(
-      id: '1',
-      pairSymbol: 'BTC/USD',
-      date: DateTime(2023, 10, 24),
-      content:
-          'Record your price action observations for BTC/USD today...',
-      status: EntryStatus.draft,
-      isLocked: false,
-      tags: ['nasdaq', 'scalping'],
-      attachmentUrls: [],
-    ),
-    JournalEntry(
-      id: '2',
-      pairSymbol: 'BTC/USD',
-      date: DateTime(2023, 10, 23),
-      content:
-          'Strong rejection at the \$63k resistance level. Observed heavy volume on the 15m timeframe. Decided to hold position as RSI indicates...',
-      status: EntryStatus.profitable,
-      isLocked: true,
-      tags: [],
-      attachmentUrls: ['thumb1'],
-    ),
-    JournalEntry(
-      id: '3',
-      pairSymbol: 'BTC/USD',
-      date: DateTime(2023, 10, 22),
-      content:
-          'Initial long entry failed. Stop loss triggered at \$61,200. Market sentiment shift due to macro news. Watching for next accumulation zone.',
-      status: EntryStatus.stopped,
-      isLocked: true,
-      tags: [],
-      attachmentUrls: [],
-    ),
-    JournalEntry(
-      id: '4',
-      pairSymbol: 'BTC/USD',
-      date: DateTime(2023, 10, 21),
-      content:
-          'Market consolidation phase. Low volatility weekend. Keeping my eye on the 4H EMA cross-over for potential re-entry.',
-      status: EntryStatus.neutral,
-      isLocked: true,
-      tags: [],
-      attachmentUrls: ['thumb2'],
-    ),
-    JournalEntry(
-      id: '5',
-      pairSymbol: 'BTC/USD',
-      date: DateTime(2023, 10, 12),
-      title: 'BTC Breakout Long',
-      content:
-          'Entered long following a successful retest of the \$26.8k support level. Significant volume divergence observed on the 4H timeframe suggested exhaustive selling pressure.\n\nMacro context: Institutional buying signals identified via on-chain data flows. The 200 EMA served as dynamic support throughout the consolidation phase.\n\n"The key here was patience. Watching for the liquidity sweep below the previous daily low before committing capital."',
-      status: EntryStatus.profitable,
-      isLocked: true,
-      tags: ['Breakout', '4H_Timeframe', 'VolumeRetest', 'HighConfidence'],
-      attachmentUrls: ['chart1', 'chart2', 'chart3'],
-    ),
-  ];
+class JournalEntryAdapter extends TypeAdapter<JournalEntry> {
+  @override
+  final int typeId = 1;
+
+  @override
+  JournalEntry read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{};
+    for (int i = 0; i < numOfFields; i++) {
+      fields[reader.readByte()] = reader.read();
+    }
+    return JournalEntry(
+      id: fields[0] as String,
+      pairSymbol: fields[1] as String,
+      date: fields[2] as DateTime,
+      title: fields[3] as String?,
+      content: fields[4] as String,
+      status: EntryStatus.values[fields[5] as int],
+      isLocked: fields[6] as bool,
+      tags: (fields[7] as List).cast<String>(),
+      attachmentUrls: (fields[8] as List).cast<String>(),
+      parentId: fields[9] as String?,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, JournalEntry obj) {
+    writer.writeByte(10);
+    writer.writeByte(0);
+    writer.write(obj.id);
+    writer.writeByte(1);
+    writer.write(obj.pairSymbol);
+    writer.writeByte(2);
+    writer.write(obj.date);
+    writer.writeByte(3);
+    writer.write(obj.title);
+    writer.writeByte(4);
+    writer.write(obj.content);
+    writer.writeByte(5);
+    writer.write(obj.status.index);
+    writer.writeByte(6);
+    writer.write(obj.isLocked);
+    writer.writeByte(7);
+    writer.write(obj.tags);
+    writer.writeByte(8);
+    writer.write(obj.attachmentUrls);
+    writer.writeByte(9);
+    writer.write(obj.parentId);
+  }
 }
 
 class HistoricalTrade {
@@ -127,8 +121,7 @@ class HistoricalTrade {
     roi: '+2.45% ROI',
     rrRatio: '1:3.4',
     grade: 'A+',
-    thesis:
-        'Entered long following a successful retest of the \$26.8k support level. Significant volume divergence observed on the 4H timeframe suggested exhaustive selling pressure.\n\nMacro context: Institutional buying signals identified via on-chain data flows. The 200 EMA served as dynamic support throughout the consolidation phase.\n\n"The key here was patience. Watching for the liquidity sweep below the previous daily low before committing capital."',
+    thesis: 'Entered long following a successful retest of the \$26.8k support level.',
     tags: ['Breakout', '4H_Timeframe', 'VolumeRetest', 'HighConfidence'],
     imageUrls: ['chart1', 'chart2', 'panoramic'],
   );

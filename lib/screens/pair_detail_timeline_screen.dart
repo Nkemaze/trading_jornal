@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/journal_entry.dart';
 import '../providers/navigation_provider.dart';
+import '../providers/journal_provider.dart';
+import '../providers/pair_provider.dart';
 import '../theme/app_colors.dart';
 import '../widgets/bottom_nav_bar.dart';
 import 'journal_editor_screen.dart';
@@ -20,8 +22,10 @@ class PairDetailTimelineScreen extends StatefulWidget {
 
 class _PairDetailTimelineScreenState extends State<PairDetailTimelineScreen> {
   final TextEditingController _todayController = TextEditingController();
-  final List<String> _todayImages = [];
+  final ScrollController _scrollController = ScrollController();
   late final NavigationProvider _navProvider;
+  bool _isTodayExpanded = false;
+  int _previousEntryCount = 0;
 
   @override
   void initState() {
@@ -30,6 +34,16 @@ class _PairDetailTimelineScreenState extends State<PairDetailTimelineScreen> {
       _navProvider = context.read<NavigationProvider>();
       _navProvider.setBottomNavIndex(1);
       _navProvider.addListener(_onNavChanged);
+      context.read<JournalProvider>().loadEntriesForPair(widget.pairSymbol);
+      _scrollToBottom();
+    });
+  }
+
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients && _scrollController.position.maxScrollExtent > 0) {
+        _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+      }
     });
   }
 
@@ -43,6 +57,7 @@ class _PairDetailTimelineScreenState extends State<PairDetailTimelineScreen> {
   void dispose() {
     _navProvider.removeListener(_onNavChanged);
     _todayController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -134,17 +149,80 @@ class _PairDetailTimelineScreenState extends State<PairDetailTimelineScreen> {
   }
 
   Widget _buildTimeline() {
-    final entries = JournalEntry.sampleData;
+    final journalProvider = context.watch<JournalProvider>();
+    final entries = journalProvider.currentPairEntries;
+
+    if (entries.length > _previousEntryCount && _previousEntryCount > 0) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (_scrollController.hasClients) {
+          _scrollController.animateTo(
+            _scrollController.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+          );
+        }
+      });
+    }
+    _previousEntryCount = entries.length;
 
     return SingleChildScrollView(
+      controller: _scrollController,
       padding: const EdgeInsets.fromLTRB(16, 24, 16, 120),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildMarketContext(),
           const SizedBox(height: 24),
-          _buildEntriesList(entries),
+          if (entries.isEmpty)
+            _buildEmptyState()
+          else
+            _buildEntriesList(entries),
         ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 48),
+        child: Column(
+          children: [
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.primary.withAlpha(25),
+              ),
+              child: const Icon(
+                Icons.book_outlined,
+                size: 40,
+                color: AppColors.primary,
+              ),
+            ),
+            const SizedBox(height: 24),
+            const Text(
+              'No journal entries yet',
+              style: TextStyle(
+                fontSize: 20,
+                height: 1.4,
+                fontWeight: FontWeight.w600,
+                color: AppColors.onSurface,
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Tap the + button to write your first entry.',
+              style: TextStyle(
+                fontSize: 14,
+                height: 1.43,
+                fontWeight: FontWeight.w400,
+                color: AppColors.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -227,7 +305,48 @@ class _PairDetailTimelineScreenState extends State<PairDetailTimelineScreen> {
               padding: const EdgeInsets.only(bottom: 24),
               child: isToday
                   ? _buildTodayCard(journalEntry)
-                  : _buildLockedCard(journalEntry),
+                  : Dismissible(
+                      key: Key(journalEntry.id),
+                      direction: DismissDirection.endToStart,
+                      background: Container(
+                        alignment: Alignment.centerRight,
+                        padding: const EdgeInsets.only(right: 16),
+                        decoration: BoxDecoration(
+                          color: AppColors.error.withAlpha(30),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(Icons.delete, color: AppColors.error),
+                      ),
+                      confirmDismiss: (_) async {
+                        return await showDialog<bool>(
+                          context: context,
+                          builder: (ctx) => AlertDialog(
+                            backgroundColor: AppColors.surfaceContainerHigh,
+                            title: const Text('Delete Entry',
+                                style: TextStyle(color: AppColors.onSurface)),
+                            content: const Text('Are you sure you want to delete this entry?',
+                                style: TextStyle(color: AppColors.onSurfaceVariant)),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.of(ctx).pop(false),
+                                child: const Text('Cancel',
+                                    style: TextStyle(color: AppColors.onSurfaceVariant)),
+                              ),
+                              TextButton(
+                                onPressed: () => Navigator.of(ctx).pop(true),
+                                child: const Text('Delete',
+                                    style: TextStyle(color: AppColors.error)),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                      onDismissed: (_) {
+                        context.read<JournalProvider>().deleteEntry(journalEntry.id);
+                        context.read<PairProvider>().refreshPairs();
+                      },
+                      child: _buildLockedCard(journalEntry),
+                    ),
             );
           }).toList(),
         ),
@@ -236,11 +355,67 @@ class _PairDetailTimelineScreenState extends State<PairDetailTimelineScreen> {
   }
 
   Widget _buildTodayCard(JournalEntry entry) {
+    if (!_isTodayExpanded) {
+      return Padding(
+        padding: const EdgeInsets.only(left: 48),
+        child: GestureDetector(
+          onTap: () => setState(() => _isTodayExpanded = true),
+          child: Stack(
+            children: [
+              Positioned(
+                left: -36,
+                top: 14,
+                child: Container(
+                  width: 14,
+                  height: 14,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: AppColors.primary,
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primary.withAlpha(50),
+                        blurRadius: 8,
+                        spreadRadius: 4,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceContainerHigh,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppColors.primary.withAlpha(76)),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.edit, size: 18, color: AppColors.primary),
+                    const SizedBox(width: 10),
+                    const Expanded(
+                      child: Text(
+                        'Write today\'s entry...',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.outline,
+                        ),
+                      ),
+                    ),
+                    const Icon(Icons.chevron_right, size: 18, color: AppColors.outline),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     return Padding(
       padding: const EdgeInsets.only(left: 48),
       child: Stack(
         children: [
-          // Timeline dot
           Positioned(
             left: -36,
             top: 20,
@@ -260,7 +435,6 @@ class _PairDetailTimelineScreenState extends State<PairDetailTimelineScreen> {
               ),
             ),
           ),
-          // Card
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -278,13 +452,72 @@ class _PairDetailTimelineScreenState extends State<PairDetailTimelineScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildTodayHeader(),
-                const SizedBox(height: 16),
-                _buildTodayTextarea(),
-                const SizedBox(height: 16),
-                _buildTodayAttachments(),
-                const SizedBox(height: 16),
-                _buildTodayActions(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'TODAY',
+                      style: TextStyle(
+                        fontSize: 12,
+                        height: 1.33,
+                        letterSpacing: 0.05,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () => setState(() => _isTodayExpanded = false),
+                      child: const Icon(Icons.close, size: 18, color: AppColors.onSurfaceVariant),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: _todayController,
+                  maxLines: null,
+                  autofocus: true,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    height: 1.43,
+                    fontWeight: FontWeight.w400,
+                    color: AppColors.onSurface,
+                  ),
+                  decoration: const InputDecoration(
+                    hintText: 'Record your observations...',
+                    hintStyle: TextStyle(color: AppColors.outline),
+                    border: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    filled: false,
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    GestureDetector(
+                      onTap: _saveTodayEntry,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary,
+                          borderRadius: BorderRadius.circular(999),
+                        ),
+                        child: const Text(
+                          'SAVE',
+                          style: TextStyle(
+                            fontSize: 12,
+                            height: 1.33,
+                            letterSpacing: 0.05,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.onPrimary,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
@@ -293,202 +526,35 @@ class _PairDetailTimelineScreenState extends State<PairDetailTimelineScreen> {
     );
   }
 
-  Widget _buildTodayHeader() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        const Text(
-          'TODAY \u2022 Oct 24',
-          style: TextStyle(
-            fontSize: 12,
-            height: 1.33,
-            letterSpacing: 0.05,
-            fontWeight: FontWeight.w600,
-            color: AppColors.primary,
-          ),
+  Future<void> _saveTodayEntry() async {
+    final content = _todayController.text.trim();
+    if (content.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please write something before saving'),
+          backgroundColor: AppColors.errorContainer,
         ),
-        Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-              decoration: BoxDecoration(
-                color: AppColors.primary.withAlpha(25),
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: const Text(
-                'DRAFT',
-                style: TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.primary,
-                ),
-              ),
-            ),
-            const SizedBox(width: 8),
-            const Icon(
-              Icons.edit,
-              size: 16,
-              color: AppColors.onSurfaceVariant,
-            ),
-          ],
-        ),
-      ],
-    );
-  }
+      );
+      return;
+    }
 
-  Widget _buildTodayTextarea() {
-    return Container(
-      constraints: const BoxConstraints(minHeight: 100),
-      child: TextField(
-        controller: _todayController,
-        maxLines: null,
-        style: const TextStyle(
-          fontSize: 14,
-          height: 1.43,
-          fontWeight: FontWeight.w400,
-          color: AppColors.onSurface,
-        ),
-        decoration: const InputDecoration(
-          hintText: 'Record your price action observations for BTC/USD today...',
-          hintStyle: TextStyle(
-            color: AppColors.outline,
-          ),
-          border: InputBorder.none,
-          enabledBorder: InputBorder.none,
-          focusedBorder: InputBorder.none,
-          filled: false,
-          contentPadding: EdgeInsets.zero,
-        ),
-      ),
+    await context.read<JournalProvider>().addEntry(
+      pairSymbol: widget.pairSymbol,
+      content: content,
     );
-  }
 
-  Widget _buildTodayAttachments() {
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: [
-        ..._todayImages.map((url) => _buildImageThumbnail(url)),
-        _buildAddImageButton(),
-      ],
-    );
-  }
-
-  Widget _buildImageThumbnail(String url) {
-    return Container(
-      width: 64,
-      height: 64,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.outlineVariant),
-        color: AppColors.surfaceContainer,
-      ),
-      child: const Icon(
-        Icons.image,
-        size: 24,
-        color: AppColors.onSurfaceVariant,
-      ),
-    );
-  }
-
-  Widget _buildAddImageButton() {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _todayImages.add('new_image');
-        });
-      },
-      child: Container(
-        width: 64,
-        height: 64,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: AppColors.outlineVariant,
-            style: BorderStyle.solid,
-          ),
+    if (mounted) {
+      context.read<PairProvider>().refreshPairs();
+      _todayController.clear();
+      _isTodayExpanded = false;
+      setState(() {});
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Entry saved'),
+          backgroundColor: AppColors.secondary,
         ),
-        child: const Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.add_a_photo,
-              size: 20,
-              color: AppColors.outline,
-            ),
-            SizedBox(height: 4),
-            Text(
-              'ADD',
-              style: TextStyle(
-                fontSize: 9,
-                fontWeight: FontWeight.w700,
-                color: AppColors.outline,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTodayActions() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        GestureDetector(
-          onTap: () {
-            // TODO: Save entry
-          },
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-            decoration: BoxDecoration(
-              color: AppColors.primary,
-              borderRadius: BorderRadius.circular(999),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.primary.withAlpha(50),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: const Text(
-              'SAVE ENTRY',
-              style: TextStyle(
-                fontSize: 12,
-                height: 1.33,
-                letterSpacing: 0.05,
-                fontWeight: FontWeight.w600,
-                color: AppColors.onPrimary,
-              ),
-            ),
-          ),
-        ),
-        GestureDetector(
-          onTap: () {},
-          child: const Row(
-            children: [
-              Icon(
-                Icons.reply,
-                size: 20,
-                color: AppColors.onSurfaceVariant,
-              ),
-              SizedBox(width: 4),
-              Text(
-                'REPLY',
-                style: TextStyle(
-                  fontSize: 12,
-                  height: 1.33,
-                  letterSpacing: 0.05,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.onSurfaceVariant,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
+      );
+    }
   }
 
   Widget _buildLockedCard(JournalEntry entry) {
@@ -496,7 +562,7 @@ class _PairDetailTimelineScreenState extends State<PairDetailTimelineScreen> {
       onTap: () {
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (_) => const LockedHistoricalEntryScreen(),
+            builder: (_) => LockedHistoricalEntryScreen(entry: entry),
           ),
         );
       },
@@ -718,7 +784,7 @@ class _PairDetailTimelineScreenState extends State<PairDetailTimelineScreen> {
       onPressed: () {
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (_) => const JournalEditorScreen(),
+            builder: (_) => JournalEditorScreen(pairSymbol: widget.pairSymbol),
           ),
         );
       },

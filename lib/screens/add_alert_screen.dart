@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/reminder_provider.dart';
 import '../theme/app_colors.dart';
 
 class AddReminderScreen extends StatefulWidget {
@@ -402,6 +404,41 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
       );
       return;
     }
-    Navigator.of(context).pop(true);
+
+    DateTime remindAt;
+    if (_selectedTime == 'Custom...' && _customDateTime != null) {
+      remindAt = _customDateTime!;
+    } else {
+      final now = DateTime.now();
+      switch (_selectedTime) {
+        case 'In 30 minutes':
+          remindAt = now.add(const Duration(minutes: 30));
+          break;
+        case 'In 1 hour':
+          remindAt = now.add(const Duration(hours: 1));
+          break;
+        case 'Tomorrow 9:00 AM':
+          remindAt = DateTime(now.year, now.month, now.day + 1, 9, 0);
+          break;
+        case 'Tomorrow 12:00 PM':
+          remindAt = DateTime(now.year, now.month, now.day + 1, 12, 0);
+          break;
+        case 'Next Monday 9:00 AM':
+          final daysUntilMonday = (8 - now.weekday) % 7;
+          final nextMonday = now.add(Duration(days: daysUntilMonday == 0 ? 7 : daysUntilMonday));
+          remindAt = DateTime(nextMonday.year, nextMonday.month, nextMonday.day, 9, 0);
+          break;
+        default:
+          remindAt = now.add(const Duration(hours: 1));
+      }
+    }
+
+    context.read<ReminderProvider>().addReminder(
+      title: _titleController.text.trim(),
+      remindAt: remindAt,
+      note: _noteController.text.trim().isEmpty ? null : _noteController.text.trim(),
+      repeatEnabled: _repeatEnabled,
+    );
+    Navigator.of(context).pop();
   }
 }

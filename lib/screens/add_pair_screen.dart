@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/pair_provider.dart';
 import '../theme/app_colors.dart';
 
 class AddPairScreen extends StatefulWidget {
@@ -190,6 +192,7 @@ class _AddPairScreenState extends State<AddPairScreen> {
       );
       return;
     }
-    Navigator.of(context).pop(_symbolController.text.trim().toUpperCase());
+    context.read<PairProvider>().addPair(_symbolController.text.trim());
+    Navigator.of(context).pop();
   }
 }

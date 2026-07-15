@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../models/trading_pair.dart';
 import '../providers/navigation_provider.dart';
+import '../providers/pair_provider.dart';
 import '../theme/app_colors.dart';
 import '../widgets/bottom_nav_bar.dart';
 import '../widgets/trading_pair_card.dart';
@@ -49,9 +49,9 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
   }
 
   Widget _buildHomeTab() {
-    final hasPairs = TradingPair.sampleData.isNotEmpty;
+    final pairProvider = context.watch<PairProvider>();
 
-    if (!hasPairs) {
+    if (pairProvider.isEmpty) {
       return HomeEmptyStateScreen(
         onAddPair: () {
           Navigator.of(context).push(
@@ -65,7 +65,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
       children: [
         _buildTopBar(context),
         Expanded(
-          child: _buildContent(),
+          child: _buildContent(pairProvider),
         ),
       ],
     );
@@ -88,7 +88,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
             ),
             const SizedBox(width: 16),
             Expanded(
-              child:               GestureDetector(
+              child: GestureDetector(
                 onTap: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(builder: (_) => const SearchExperienceScreen()),
@@ -144,7 +144,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
     );
   }
 
-  Widget _buildContent() {
+  Widget _buildContent(PairProvider pairProvider) {
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(16, 24, 16, 120),
       child: Column(
@@ -174,20 +174,62 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
           Wrap(
             spacing: 16,
             runSpacing: 16,
-            children: TradingPair.sampleData.map((pair) {
+            children: pairProvider.pairs.map((pair) {
               return SizedBox(
                 width: 340,
-                child: TradingPairCard(
-                  pair: pair,
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => PairDetailTimelineScreen(
-                          pairSymbol: pair.symbol,
+                child: Dismissible(
+                  key: Key(pair.id),
+                  direction: DismissDirection.endToStart,
+                  background: Container(
+                    alignment: Alignment.centerRight,
+                    padding: const EdgeInsets.only(right: 16),
+                    decoration: BoxDecoration(
+                      color: AppColors.error.withAlpha(30),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(Icons.delete, color: AppColors.error),
+                  ),
+                  confirmDismiss: (_) async {
+                    return await showDialog<bool>(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        backgroundColor: AppColors.surfaceContainerHigh,
+                        title: const Text('Delete Pair',
+                            style: TextStyle(color: AppColors.onSurface)),
+                        content: Text(
+                          'Delete ${pair.symbol} and all its journal entries?',
+                          style: const TextStyle(color: AppColors.onSurfaceVariant),
                         ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(ctx).pop(false),
+                            child: const Text('Cancel',
+                                style: TextStyle(color: AppColors.onSurfaceVariant)),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.of(ctx).pop(true),
+                            child: const Text('Delete',
+                                style: TextStyle(color: AppColors.error)),
+                          ),
+                        ],
                       ),
                     );
                   },
+                  onDismissed: (_) {
+                    pairProvider.deletePair(pair.id);
+                  },
+                  child: TradingPairCard(
+                    pair: pair,
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => PairDetailTimelineScreen(
+                            pairSymbol: pair.symbol,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                 ),
               );
             }).toList(),
